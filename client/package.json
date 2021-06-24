@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.11.4",
+    "@material-ui/icons": "^4.11.2",
+    "ethereumjs-util": "^7.0.10",
+    "fontsource-roboto": "^4.0.0",
     "react": "16.11.0",
     "react-bootstrap-validation": "^0.1.11",
     "react-dom": "16.11.0",

@@ -6,8 +6,8 @@ import "../contracts/Market.sol";
 
 contract TestMarket {
 
-  function testItStoresAValue() public {
-    Market market = Market(DeployedAddresses.Market());
-  }
+  // function testItStoresAValue() public {
+  //   Market market = Market(DeployedAddresses.Market());
+  // }
 
 }
