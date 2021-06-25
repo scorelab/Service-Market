@@ -38,7 +38,7 @@ contract Market {
     }
 
     function _concat(bytes12 a, bytes20 b) internal pure returns (bytes32) {
-        return bytes32((uint256(uint96(a)) << 96) | uint160(b));
+       return  bytes32((uint256(uint96(a)) << 160) | uint160(b));
     }
 
     function verify(
@@ -48,22 +48,15 @@ contract Market {
     ) public returns (bytes32) {
         bytes32 ln = h;
 
-        for (uint256 i = 0; i < W.length; i++) {
-            bytes12 w1 = bytes12(W[i]);
-            bytes20 w2 = bytes20(W[i] << 96);
-
+        for (uint48 i = 0; i < W.length; i++) {
+            uint48 height = i + 1;
             if (j % 2 == 0) {
-                ln = _concat(
-                    w1,
-                    ripemd160(abi.encodePacked((i + 1), ln, w2))
-                );
+                bytes12 w1 = bytes12(W[i]);
+                ln = _concat(w1,ripemd160(abi.encodePacked(height, ln, W[i])));
             } else {
-                ln = _concat(
-                    w1,
-                    ripemd160(abi.encodePacked((i + 1), w2, ln))
-                );
+                bytes12 ln1 = bytes12(ln);
+                ln = _concat(ln1,ripemd160(abi.encodePacked(height, W[i], ln)));
             }
-
             j = j / 2;
         }
         emit Root(ln);
