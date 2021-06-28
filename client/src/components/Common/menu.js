@@ -5,16 +5,18 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Store';
-import { MenuItem } from '@material-ui/core';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
+import * as ROUTES from '../../constants/routes';
+import { Link } from 'react-router-dom';
+import { Button } from '@material-ui/core';
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
     grow: {
         flexGrow: 1,
-      },
+    },
     appBar: {
         width: `calc(100% - ${drawerWidth}px)`,
         marginLeft: drawerWidth,
@@ -75,12 +77,15 @@ function TopMenu() {
                     className={classes.menuButton}
                     color='inherit'
                     aria-label='menu'
+                    component={Link} to={ROUTES.HOME}
                 >
                     <MenuIcon />
                 </IconButton>
-                <Typography variant="h6" className={classes.title} noWrap>
-                    Service Market
-                </Typography>
+                <Button className={classes.menuButton} >How It Works</Button>
+                <Button className={classes.menuButton} >About</Button>
+                <Button className={classes.menuButton} >Contact</Button>
+
+                <div className={classes.grow} />
                 <div className={classes.search}>
                     <div className={classes.searchIcon}>
                         <SearchIcon />
@@ -94,18 +99,6 @@ function TopMenu() {
                         inputProps={{ 'aria-label': 'search' }}
                     />
                 </div>
-
-                <div className={classes.grow} />
-                <MenuItem>
-                    <Typography variant='h6' className={classes.title}>
-                        Home
-                    </Typography>
-                </MenuItem>
-                <MenuItem>
-                    <Typography variant='h6' className={classes.title}>
-                        About
-                    </Typography>
-                </MenuItem>
             </Toolbar>
         </AppBar>
     );
