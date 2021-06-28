@@ -1,4 +1,4 @@
-import React, { Children, useState } from 'react';
+import React, { useState } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -12,12 +12,13 @@ import Work from '@material-ui/icons/Work';
 import CreateOutlined from '@material-ui/icons/CreateOutlined';
 import ViewArray from '@material-ui/icons/ViewArray';
 import { makeStyles } from '@material-ui/core/styles';
-import { Avatar, Box, Button, Card, CardContent, CardActions, Divider, Typography } from '@material-ui/core';
+import { Box, Button, Divider, Typography } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
 import * as ROUTES from '../../constants/routes';
 import { Link } from "react-router-dom";
 import SignOutButton from '../Account/signout'
 import { useSelector } from 'react-redux';
+import AccountList from '../Wallet/accountList';
 
 const drawerWidth = 240;
 
@@ -108,7 +109,7 @@ const Wallet = () => {
       <Typography variant="h6" >
         Wallet
       </Typography>
-
+      <AccountList/>
       <Typography color="textSecondary">
         Status: Connected
       </Typography>

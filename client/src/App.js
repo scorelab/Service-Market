@@ -17,8 +17,6 @@ import "./App.css";
 import * as ROUTES from './constants/routes';
 import { withAuthentication } from './components/Session';
 import Messages from "./components/Messages/Messages";
-import { useDispatch } from "react-redux";
-import { withFirebase } from "./components/Firebase";
 
 class App extends Component {
 

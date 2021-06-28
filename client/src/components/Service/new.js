@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import { Link } from 'react-router-dom';
 import MainBlock from '../Common/main-block';
 
 const NewContractPage = (props,contract) => (
