@@ -1,17 +1,24 @@
 import React, { Component } from "react";
 import MarketContract from "./contracts/Market.json";
 import getWeb3 from "./getWeb3";
-import { AccountViewForm, ContractCreateForm, ContractViewForm } from "./components/Views";
-
-
+import { ThemeProvider } from '@material-ui/core/styles'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import theme from './theme'
+import { Route, Switch } from "react-router-dom";
+import TopMenu from './components/Common/menu';
+import SideMenu from './components/Common/sidemenu';
+import Footer from './components/Common/footer';
+import NewContractPage from './components/Service/new';
+import ServicePage from './components/Service/services';
+import SignUpPage from './components/Account/signup'
+import SignInPage from './components/Account/signin'
+import AccountPage from './components/Account/account'
 import "./App.css";
+import * as ROUTES from './constants/routes';
+import { withAuthentication } from './components/Session';
+import Messages from "./components/Messages/Messages";
 
 class App extends Component {
-  state = { activeAcc: null, web3: null, accounts: null, contract: null };
-
-  updateActiveAcc = (acc) => {
-    this.setState({ activeAcc: acc });
-  }
 
   componentDidMount = async () => {
     try {
@@ -26,43 +33,38 @@ class App extends Component {
         deployedNetwork && deployedNetwork.address,
       );
 
-      const accounts = await web3.eth.getAccounts();
+      const active_account = await web3.eth.getAccounts()[0];
 
-      // Set web3 and contract to the state, and then proceed with an
-      // example of interacting with the contract's methods.
-      this.setState({activeAcc:accounts[0], web3: web3, contract: instance });
     } catch (error) {
-      // Catch any errors for any of the above operations.
-      alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`,
-      );
       console.error(error);
     }
   };
 
   render() {
-    if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
-    }
     return (
-      <div className="App">
-        <AccountViewForm
-          web3={this.state.web3}
-          account={this.state.activeAcc}
-          updateActiveAcc={this.updateActiveAcc}
 
-        />
-        <ContractViewForm
-          contract={this.state.contract}
-          account={this.state.activeAcc}
-        />
-        <ContractCreateForm
-          contract={this.state.contract}
-          account={this.state.activeAcc}
-        />
+      <div className="App">
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <div style={{display: 'flex'}}>
+            <TopMenu />
+            <SideMenu />
+            <Switch>
+              <Route exact from={ROUTES.LANDING} render={props => <ServicePage {...props} />} />
+              <Route exact from={ROUTES.VIEW_SERVICE} render={props => <ServicePage {...props} />} />
+              <Route exact from={ROUTES.ADD_SERVICE} render={props => <NewContractPage {...props}/>} />
+              <Route exact from={ROUTES.SIGN_UP} render={props => <SignUpPage {...props} />} />
+              <Route exact from={ROUTES.SIGN_IN} render={props => <SignInPage {...props} />} />
+              <Route exact from={ROUTES.ACCOUNT} render={props => <AccountPage {...props} />} />
+              <Route exact from={ROUTES.NOTIFICATIONS} render={props => <Messages {...props} />} />
+            </Switch>      
+            <Footer />
+          </div>
+        </ThemeProvider>
       </div>
     );
   }
 }
 
-export default App;
+export default withAuthentication(App);
+
