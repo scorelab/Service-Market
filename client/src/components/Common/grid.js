@@ -14,37 +14,24 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function ShowCase() {
+export default function ShowCase(props) {
     const classes = useStyles();
-
-    function FormRow() {
-        return (
-            <React.Fragment>
-                <Grid item xs={4}>
-                    <Item />
-                </Grid>
-                <Grid item xs={4}>
-                    <Item />
-                </Grid>
-                <Grid item xs={4}>
-                    <Item />
-                </Grid>
-            </React.Fragment>
-        );
-    }
-
+    const {services} = props;
+    console.log(services);
     return (
         <div className={classes.root}>
-            <Grid container spacing={1}>
-                <Grid container item xs={12} spacing={3}>
-                    <FormRow />
-                </Grid>
-                <Grid container item xs={12} spacing={3}>
-                    <FormRow />
-                </Grid>
-                <Grid container item xs={12} spacing={3}>
-                    <FormRow />
-                </Grid>
+            <Grid
+                container
+                spacing={2}
+                direction="row"
+                justify="flex-start"
+                alignItems="flex-start"
+            >
+                {Object.keys(services || {}).map((k,i) => (
+                    <Grid item xs={12} sm={6} md={3} key={i}>
+                        <Item sid={k} data={services[k]}/>
+                    </Grid>
+                ))}
             </Grid>
         </div>
     );

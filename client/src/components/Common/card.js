@@ -9,11 +9,13 @@ import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import { green } from '@material-ui/core/colors';
+import { lightBlue } from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import moment from 'moment';
+import { Divider } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,13 +36,28 @@ const useStyles = makeStyles((theme) => ({
     transform: 'rotate(180deg)',
   },
   avatar: {
-    backgroundColor: green[500],
+    backgroundColor: lightBlue[200],
   },
+
+  content:{
+    textAlign: "left"
+  }
+
 }));
 
-export default function Item() {
+export default function Item(props) {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
+
+  const {
+    serviceName,
+    serviceDetails,
+    serviceType,
+    intermediary,
+    startDate,
+    endDate,
+    unitValue,
+  } = props.data;
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -51,7 +68,7 @@ export default function Item() {
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
-            C
+            {serviceName.charAt(0).toUpperCase()}
           </Avatar>
         }
         action={
@@ -59,13 +76,24 @@ export default function Item() {
             <MoreVertIcon />
           </IconButton>
         }
-        title="CCTV Stream"
-        subheader="CCT Pvt Ltd."
+        title={serviceName}
+        subheader={serviceType}
       />
-      <CardContent>
-        <Typography variant="body2" color="textSecondary" component="p">
-            Our webcam hosting service enables you to stream live video and audio from your webcams and other sources, directly to your own website in real time. 
-        </Typography>
+            <Divider variant="middle" />
+
+      <CardContent  className={classes.content}>
+          <Typography variant="body2" color="textSecondary" component="p">
+            Start: {moment(startDate).format("DD MMMM YYYY")}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            End: {moment(endDate).format("DD MMMM YYYY")}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            Intermediary: {intermediary}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            Unit Value: {unitValue}
+          </Typography>
       </CardContent>
       <CardActions disableSpacing>
         <IconButton aria-label="add to favorites">
@@ -87,7 +115,9 @@ export default function Item() {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-            
+          <Typography variant="body2" color="textSecondary" component="p">
+            {serviceDetails}
+          </Typography>
         </CardContent>
       </Collapse>
     </Card>

@@ -18,7 +18,6 @@ import * as ROUTES from '../../constants/routes';
 import { Link } from "react-router-dom";
 import SignOutButton from '../Account/signout'
 import { useSelector } from 'react-redux';
-import AccountList from '../Wallet/accountList';
 
 const drawerWidth = 240;
 
@@ -109,7 +108,6 @@ const Wallet = () => {
       <Typography variant="h6" >
         Wallet
       </Typography>
-      <AccountList/>
       <Typography color="textSecondary">
         Status: Connected
       </Typography>
