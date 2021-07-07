@@ -100,6 +100,11 @@ class Firebase {
 
   services = () => this.db.ref('services');
 
+  // *** Subscription API ***
+  subscription = subid => this.db.ref(`subscriptions/${subid}`);
+
+  subscriptions = () => this.db.ref('subscriptions');
+
 }
 
 export default Firebase;

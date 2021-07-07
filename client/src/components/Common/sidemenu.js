@@ -94,6 +94,10 @@ const SignedMenu = ({ authUser }) => {
           <MenuItem title="New Service" icon={<CreateOutlined />} to={ROUTES.ADD_SERVICE} />
           <MenuItem title="My Services" icon={< ViewArray />} to={ROUTES.VIEW_SERVICE} />
         </ExpandableMenuItem>
+        <ExpandableMenuItem title="Subscription" icon={<Work />}>
+          <MenuItem title="New Subscription" icon={<CreateOutlined />} to={ROUTES.ADD_SUBSCRIPTION} />
+          <MenuItem title="My Subscriptions" icon={< ViewArray />} to={ROUTES.VIEW_SUBSCRIPTION} />
+        </ExpandableMenuItem>
         <MenuItem title="Profile" icon={<Person />} to={ROUTES.ACCOUNT} />
       </List>
       <SignOutButton />

@@ -6,5 +6,7 @@ export const ACCOUNT = '/account';
 export const ADMIN = '/admin';
 export const PASSWORD_FORGET = '/pw-forget';
 export const ADD_SERVICE = '/add-service';
+export const ADD_SUBSCRIPTION = '/add-subscription';
 export const VIEW_SERVICE = '/view-service';
+export const VIEW_SUBSCRIPTION = '/view-subscription';
 export const NOTIFICATIONS = '/notifications';
