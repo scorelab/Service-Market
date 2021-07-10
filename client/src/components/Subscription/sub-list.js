@@ -55,9 +55,9 @@ export default function SubscriptionList(props) {
                     {props.subList.map((row) => (
                         <TableRow key={row.sid}>
                             <TableCell>{row.serviceName}</TableCell>
-                            <TableCell align="right">{row.intermediary}</TableCell>
-                            <TableCell align="right">{row.startDate.format("DD MMMM YYYY")}</TableCell>
-                            <TableCell align="right">{row.endDate.format("DD MMMM YYYY")}</TableCell>
+                            <TableCell align="right">{row.intermediaryName}</TableCell>
+                            <TableCell align="right">{row.startDate && row.startDate.format("DD MMMM YYYY")}</TableCell>
+                            <TableCell align="right">{row.endDate && row.endDate.format("DD MMMM YYYY")}</TableCell>
                             <TableCell align="right">{row.status}</TableCell>
                             <TableCell align="right">{row.value}</TableCell>
                             <TableCell align="right">

@@ -103,14 +103,14 @@ class SubscriptionItem extends React.Component {
       <Grid container spacing={4} >
         <Grid item xs={5}>
           <FormControl variant="outlined" fullWidth >
-            <InputLabel htmlFor="subscriptionType">Subscription type</InputLabel>
+            <InputLabel htmlFor="subscriptionType">Service</InputLabel>
             <Select
               id="serviceId"
               name="serviceId"
               value={serviceId}
               onChange={this.onChange}
-              placeholder="Subscription Type"
-              label="Subscription Type"
+              placeholder="Service"
+              label="Service"
             >
               <option value="" disabled></option>
               {Object.entries(this.props.services).map(([k,v], i) => {
@@ -189,9 +189,8 @@ class NewSubscriptionFormBase extends Component {
   }
 
   updateItem = (item) => {
-    console.log(item.startDate);
     item.serviceName = this.state.services[item.serviceId].serviceName
-    item.intermediary = this.state.services[item.serviceId].intermediary
+    item.intermediaryName = this.state.services[item.serviceId].intermediaryName
     item.status = "Pending"
     item.value = this.state.services[item.serviceId].unitValue*moment.duration(item.endDate.diff(item.startDate)).asDays().toFixed(0);
     this.setState({

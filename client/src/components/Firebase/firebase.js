@@ -105,6 +105,11 @@ class Firebase {
 
   subscriptions = () => this.db.ref('subscriptions');
 
+  // *** Intermediary API ***
+  intermediary = intid => this.db.ref(`intermediaries/${intid}`);
+
+  intermediaries = () => this.db.ref('intermediaries');
+
 }
 
 export default Firebase;

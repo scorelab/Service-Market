@@ -38,89 +38,76 @@ import {
 } from '@material-ui/core';
 import LockIcon from '@material-ui/icons/Lock';
 import moment from 'moment';
-import SubscriptionList from './sub-list';
+import { SERVICE_TYPES } from '../../constants/constants';
 
 
 
-class SubscriptionPage extends Component {
+class IntermediationPage extends Component {
 
   constructor(props) {
     super(props);
-    this.handleClickOpen = this.handleClickOpen.bind(this);
-    this.handleClose = this.handleClose.bind(this);
-
     this.state = {
       loading: false,
-      subscriptions: [],
-      subList: [],
-      isOpen: false
+      intermediaries: [],
     };
   }
 
 
   componentDidMount() {
-    if (!this.state.subscriptions.length) {
+    if (!this.state.intermediaries.length) {
       this.setState({ loading: true });
     }
-    this.onListenForSubscriptions();
+    this.onListenForIntermediations();
   }
 
-  onListenForSubscriptions = () => {
+  onListenForIntermediations = () => {
     this.props.firebase
-      .subscriptions()
+      .intermediaries()
       .orderByChild('createdAt')
       .limitToLast(5)
       .on('value', snapshot => {
-        this.setState({ loading: false, subscriptions: snapshot.val() });
+        this.setState({ loading: false, intermediaries: snapshot.val() });
       });
   };
 
   componentWillUnmount() {
-    this.props.firebase.subscriptions().off();
+    this.props.firebase.intermediaries().off();
   }
 
-  handleClickOpen(list) {
-    this.setState({ isOpen: true, subList: list });
-  };
-
-  handleClose() {
-    this.setState({ isOpen: false, subList: [] });
-  };
 
   render() {
     const {
-      subscriptions,
+      intermediaries,
       loading,
-      isOpen,
-      activeItemName,
-      activeItemId,
     } = this.state;
 
     return (
-      <MainBlock title="My Subscriptions">
+      <MainBlock title="My Intermediations">
         {loading && <div>Loading ...</div>}
 
-        {subscriptions &&
+        {intermediaries &&
           <TableContainer component={Paper}>
             <Table aria-label="spanning table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Subscription ID</TableCell>
+                  <TableCell>Intermediary Name</TableCell>
+                  <TableCell align="right">Service Type</TableCell>
+                  <TableCell align="right">Fee (%)</TableCell>
                   <TableCell align="right">Created Date</TableCell>
-                  <TableCell align="right">Status</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {Object.entries(subscriptions).map(([k, row]) => (
+                {Object.entries(intermediaries).map(([k, row]) => (
                   <TableRow key={k}>
-                    <TableCell>{k}</TableCell>
+                    <TableCell>{row.intermediaryName}</TableCell>
+                    <TableCell align="right">{SERVICE_TYPES[row.intermediaryType]}</TableCell>
+                    <TableCell align="right">{row.brokerFee}</TableCell>
                     <TableCell align="right">{moment(row.createdAt).format("DD MMMM YYYY")}</TableCell>
-                    <TableCell align="right">{row.status}</TableCell>
                     <TableCell align="right">
                       <ButtonGroup variant="text" color="primary" size="large" aria-label="text primary button group">
-                        <Button><VisibilityIcon onClick={() => this.handleClickOpen(row.subList)} /></Button>
-                        <Button><LockIcon /></Button>
+                        <Button><VisibilityIcon/></Button>
+                        <Button><DeleteIcon /></Button>
                       </ButtonGroup>
                     </TableCell>
                   </TableRow>
@@ -131,18 +118,7 @@ class SubscriptionPage extends Component {
           </TableContainer>
         }
 
-        {!subscriptions && <div>There are no subscriptions ...</div>}
-        <Dialog open={isOpen} aria-labelledby="form-dialog-title">
-          <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
-          <DialogContent>
-            <SubscriptionList subList={this.state.subList} />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
-              Ok
-            </Button>
-          </DialogActions>
-        </Dialog>
+        {!intermediaries && <div>There are no itermediations ...</div>}
       </MainBlock>
     );
   }
@@ -159,4 +135,4 @@ export default compose(
   connect(
     mapStateToProps,
   ),
-)(SubscriptionPage);
+)(IntermediationPage);
