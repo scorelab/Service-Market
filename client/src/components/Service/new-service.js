@@ -221,7 +221,7 @@ class NewServiceFormBase extends Component {
                       onChange={this.onChange}
                     >
                       <option value="" disabled></option>
-                      {Object.entries(intermediaries).map(([k, v], i) => {
+                      {intermediaries && Object.entries(intermediaries).map(([k, v], i) => {
                         return <option key={k} value={k}>{v.intermediaryName}</option>;
                       })}
                     </Select>

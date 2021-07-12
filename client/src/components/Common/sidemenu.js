@@ -16,8 +16,10 @@ import { Box, Button, Divider, Typography } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
 import * as ROUTES from '../../constants/routes';
 import { Link } from "react-router-dom";
-import SignOutButton from '../Account/signout'
 import { useSelector } from 'react-redux';
+import TouchAppIcon from '@material-ui/icons/TouchApp';
+import StreetviewIcon from '@material-ui/icons/Streetview';
+import RoomServiceIcon from '@material-ui/icons/RoomService';
 
 const drawerWidth = 240;
 
@@ -36,11 +38,11 @@ const useStyles = makeStyles(theme => ({
     height: 100,
   },
   wallet: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(5),
     flex: 1,
-    alignItems: 'left',
-    justifyContent: 'flex-start',
-    marginBottom: 36
+  },
+  data: {
+    textAlign: 'left',
   },
   logo: {
     width: drawerWidth * 0.8,
@@ -71,40 +73,31 @@ function SideMenu() {
       <Divider variant="middle" />
 
       {/* Rest of actions */}
-      {authUser && <SignedMenu authUser={authUser} />}
-      {!authUser && <UnSignedMenu />}
+       <SignedMenu />
     </Drawer>
 
   );
 }
 
-const SignedMenu = ({ authUser }) => {
+const SignedMenu = () => {
   const classes = useStyles();
   return (
     <div>
       <Wallet />
-      <Typography variant="h6" className={classes.title} noWrap>
-        {authUser.username}
-      </Typography>
-      <Typography variant="caption" className={classes.title} noWrap>
-        {authUser.email}
-      </Typography>
       <List>
-        <ExpandableMenuItem title="Service" icon={<Work />}>
+        <ExpandableMenuItem title="Service" icon={<RoomServiceIcon />}>
           <MenuItem title="New Service" icon={<CreateOutlined />} to={ROUTES.ADD_SERVICE} />
           <MenuItem title="My Services" icon={< ViewArray />} to={ROUTES.VIEW_SERVICE} />
         </ExpandableMenuItem>
-        <ExpandableMenuItem title="Intermediation" icon={<Work />}>
+        <ExpandableMenuItem title="Intermediation" icon={<StreetviewIcon />}>
           <MenuItem title="New Intermediation" icon={<CreateOutlined />} to={ROUTES.ADD_INTERMEDIATION} />
-          <MenuItem title="My Intermediations" icon={< ViewArray />} to={ROUTES.VIEW_INTERMEDIATION} />
+          <MenuItem title="My Intermediations" icon={<ViewArray />} to={ROUTES.VIEW_INTERMEDIATION} />
         </ExpandableMenuItem>
-        <ExpandableMenuItem title="Subscription" icon={<Work />}>
+        <ExpandableMenuItem title="Subscription" icon={<TouchAppIcon />}>
           <MenuItem title="New Subscription" icon={<CreateOutlined />} to={ROUTES.ADD_SUBSCRIPTION} />
-          <MenuItem title="My Subscriptions" icon={< ViewArray />} to={ROUTES.VIEW_SUBSCRIPTION} />
+          <MenuItem title="My Subscriptions" icon={<ViewArray />} to={ROUTES.VIEW_SUBSCRIPTION} />
         </ExpandableMenuItem>
-        <MenuItem title="Profile" icon={<Person />} to={ROUTES.ACCOUNT} />
       </List>
-      <SignOutButton />
     </div>
   );
 };
@@ -113,30 +106,21 @@ const Wallet = () => {
   const classes = useStyles();
   return (
     <div className={classes.wallet}>
-      <Typography variant="h6" >
-        Wallet
-      </Typography>
-      <Typography color="textSecondary">
-        Status: Connected
-      </Typography>
-      <Typography color="textSecondary">
-        Accounts: 10
-      </Typography>
-      <Typography color="textSecondary">
-        Balance: 0.5 Eth
-      </Typography>
-      <Button size="small">See More</Button>
-    </div>
-  );
-};
+      <Typography variant="h6">Wallet</Typography>
 
-const UnSignedMenu = () => {
-  return (
-    <div>
-      <Wallet />
-      <Button component={Link} to={ROUTES.SIGN_IN} variant="contained">
-        Sign In
-      </Button>
+      <div className={classes.data}>
+        <Typography color="textSecondary">
+          Status: Connected
+        </Typography>
+        <Typography color="textSecondary">
+          Accounts: 10
+        </Typography>
+        <Typography color="textSecondary">
+          Balance: 0.5 Eth
+        </Typography>
+      </div>
+
+      <Button size="small">See More</Button>
     </div>
   );
 };

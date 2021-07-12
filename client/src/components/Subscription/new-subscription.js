@@ -85,7 +85,7 @@ class SubscriptionItem extends React.Component {
 
   onClick = (event) => {
     this.props.updateItem(this.state);
-    this.setState({serviceId:''});
+    this.setState({ serviceId: '' });
   }
 
   render() {
@@ -113,7 +113,7 @@ class SubscriptionItem extends React.Component {
               label="Service"
             >
               <option value="" disabled></option>
-              {Object.entries(this.props.services).map(([k,v], i) => {
+              {Object.entries(this.props.services).map(([k, v], i) => {
                 return <option key={k} value={k}>{v.serviceName}</option>;
               })}
             </Select>
@@ -190,9 +190,10 @@ class NewSubscriptionFormBase extends Component {
 
   updateItem = (item) => {
     item.serviceName = this.state.services[item.serviceId].serviceName
+    item.intermediary = this.state.services[item.serviceId].intermediary
     item.intermediaryName = this.state.services[item.serviceId].intermediaryName
     item.status = "Pending"
-    item.value = this.state.services[item.serviceId].unitValue*moment.duration(item.endDate.diff(item.startDate)).asDays().toFixed(0);
+    item.value = this.state.services[item.serviceId].unitValue * moment.duration(item.endDate.diff(item.startDate)).asDays().toFixed(0);
     this.setState({
       subList: [...this.state.subList, item]
     });
@@ -206,16 +207,27 @@ class NewSubscriptionFormBase extends Component {
       subList,
     } = this.state;
 
+
     this.props.firebase.subscriptions().push({
       consumer: authUser.uid,
-      status:"Pending",
-      subList: subList.map(e=>{
-        e.startDate=e.startDate.toDate(); 
-        e.endDate=e.endDate.toDate(); 
+      status: "Pending",
+      subList: subList.map(e => {
+        e.startDate = e.startDate.toDate();
+        e.endDate = e.endDate.toDate();
         return e;
       }),
       createdAt: this.props.firebase.serverValue.TIMESTAMP,
-    }).then(() => {
+    }).then((res) => {
+      subList.forEach((e) => {
+        this.props.firebase.messages().push({
+          from: authUser.username,
+          to: e.intermediary,
+          type: "Subscription Request",
+          subject: e.serviceName,
+          subjectId: [res.key,e.serviceId],
+
+        });
+      });
       this.setState({ ...INITIAL_STATE });
     }).catch(error => {
       this.setState({ error });
@@ -245,7 +257,7 @@ class NewSubscriptionFormBase extends Component {
           <SubscriptionItem updateItem={this.updateItem} services={services} />
           <Grid container spacing={4} justify="flex-end">
             <Grid item xs>
-              <SubscriptionList subList={subList}/>
+              <SubscriptionList subList={subList} />
             </Grid>
           </Grid>
           <Grid container spacing={4} justify="flex-end">

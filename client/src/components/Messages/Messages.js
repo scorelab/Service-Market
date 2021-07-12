@@ -1,3 +1,4 @@
+import { Box, Button, Typography } from '@material-ui/core';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
@@ -9,7 +10,6 @@ import MessageList from './MessageList';
 class Messages extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       text: '',
       loading: false,
@@ -20,7 +20,6 @@ class Messages extends Component {
     if (!this.props.messages.length) {
       this.setState({ loading: true });
     }
-
     this.onListenForMessages();
   }
 
@@ -37,7 +36,6 @@ class Messages extends Component {
       .limitToLast(this.props.limit)
       .on('value', snapshot => {
         this.props.onSetMessages(snapshot.val());
-
         this.setState({ loading: false });
       });
   };
@@ -46,35 +44,24 @@ class Messages extends Component {
     this.props.firebase.messages().off();
   }
 
-  onChangeText = event => {
-    this.setState({ text: event.target.value });
+  onActionTaken = (msg, isAccepted) => {
+    const { subjectId, ...subSnapshot } = msg;
+    var that = this
+    var status = isAccepted? "Approved": "Rejected";
+    this.props.firebase.subscriptions().orderByKey()
+      .equalTo(subjectId[0])
+      .once('value', function (snap) {
+        var subList = snap.val()[subjectId[0]].subList
+        subList.find(v => v.serviceId === subjectId[1]).status = status;
+        that.props.firebase.subscription(subjectId[0]).update({
+          'subList': subList
+        });
+
+      });
+    this.props.firebase.message(msg.uid).remove();
+
   };
 
-  onCreateMessage = (event, authUser) => {
-    this.props.firebase.messages().push({
-      text: this.state.text,
-      userId: authUser.uid,
-      createdAt: this.props.firebase.serverValue.TIMESTAMP,
-    });
-
-    this.setState({ text: '' });
-
-    event.preventDefault();
-  };
-
-  onEditMessage = (message, text) => {
-    const { uid, ...messageSnapshot } = message;
-
-    this.props.firebase.message(message.uid).set({
-      ...messageSnapshot,
-      text,
-      editedAt: this.props.firebase.serverValue.TIMESTAMP,
-    });
-  };
-
-  onRemoveMessage = uid => {
-    this.props.firebase.message(uid).remove();
-  };
 
   onNextPage = () => {
     this.props.onSetMessagesLimit(this.props.limit + 5);
@@ -82,42 +69,26 @@ class Messages extends Component {
 
   render() {
     const { messages } = this.props;
-    const { text, loading } = this.state;
+    const { loading } = this.state;
 
     return (
-      <MainBlock>
-        {!loading && messages && (
-          <button type="button" onClick={this.onNextPage}>
-            More
-          </button>
-        )}
-
-        {loading && <div>Loading ...</div>}
+      <div>
+        {loading && <Box padding={10}>Loading...</Box>}
 
         {messages && (
           <MessageList
-            authUser={this.props.authUser}
             messages={messages}
-            onEditMessage={this.onEditMessage}
-            onRemoveMessage={this.onRemoveMessage}
+            onActionTaken={this.onActionTaken}
           />
         )}
+        {!loading && messages && (
+          <Button fullwidth type="button" onClick={this.onNextPage}>
+            More
+          </Button>
+        )}
 
-        {!messages && <div>There are no messages ...</div>}
-
-        <form
-          onSubmit={event =>
-            this.onCreateMessage(event, this.props.authUser)
-          }
-        >
-          <input
-            type="text"
-            value={text}
-            onChange={this.onChangeText}
-          />
-          <button type="submit">Send</button>
-        </form>
-      </MainBlock>
+        {!messages && <div>No messages ...</div>}
+      </div>
     );
   }
 }

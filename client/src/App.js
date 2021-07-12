@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import MarketContract from "./contracts/Market.json";
 import getWeb3 from "./getWeb3";
 import { ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
@@ -15,11 +14,16 @@ import SignInPage from './components/Account/signin'
 import AccountPage from './components/Account/account'
 import NewSubscriptionPage from './components/Subscription/new-subscription'
 import SubscriptionPage from './components/Subscription/subscriptions'
+import IntermediationPage from './components/Intermediation/intermediations'
 
 import "./App.css";
 import * as ROUTES from './constants/routes';
 import { withAuthentication } from './components/Session';
 import Messages from "./components/Messages/Messages";
+import { drizzleConnect } from 'drizzle-react'
+import { compose } from "redux";
+import PropTypes from 'prop-types'
+import NewIntermediaryPage from "./components/Intermediation/new-intermediation";
 
 class App extends Component {
   // state = { loading: true, drizzleState: null };
