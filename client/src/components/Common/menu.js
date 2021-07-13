@@ -4,15 +4,25 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Store';
+import Person from '@material-ui/icons/Person';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
+import SettingIcon from '@material-ui/icons/Settings';
 import * as ROUTES from '../../constants/routes';
 import { Link } from 'react-router-dom';
-import { Button } from '@material-ui/core';
-
+import { Button, ButtonGroup, Card, CardActions, CardContent, Divider } from '@material-ui/core';
+import Popover from '@material-ui/core/Popover';
+import Typography from '@material-ui/core/Typography';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import Messages from '../Messages/Messages';
+import { useSelector } from 'react-redux';
+import { withFirebase } from '../Firebase';
+import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
+
     grow: {
         flexGrow: 1,
     },
@@ -53,6 +63,7 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
+
     inputInput: {
         padding: theme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
@@ -65,8 +76,33 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function TopMenu() {
+function TopMenu({ firebase }) {
     const classes = useStyles();
+    const authUser = useSelector(state => state.sessionState.authUser);
+
+    const [anchorElN, setAnchorElN] = React.useState(null);
+    const [anchorElP, setAnchorElP] = React.useState(null);
+
+    const handleClickN = (event) => {
+        setAnchorElN(event.currentTarget);
+    };
+
+    const handleCloseN = () => {
+        setAnchorElN(null);
+    };
+
+    const handleClickP = (event) => {
+        setAnchorElP(event.currentTarget);
+    };
+
+    const handleCloseP = () => {
+        setAnchorElP(null);
+    };
+
+    const openN = Boolean(anchorElN);
+    const idN = openN ? 'popoverN' : undefined;
+    const openP = Boolean(anchorElP);
+    const idP = openP ? 'popoverP' : undefined;
 
     return (
         <AppBar position='fixed' className={classes.appBar}>
@@ -98,9 +134,72 @@ function TopMenu() {
                         inputProps={{ 'aria-label': 'search' }}
                     />
                 </div>
+                {!authUser &&
+                    <IconButton component={Link} to={ROUTES.SIGN_IN}>
+                        <AccountCircleIcon />
+                    </IconButton>
+                }
+                {authUser &&
+                    <div>
+                        <IconButton aria-describedby={idN} onClick={handleClickN}>
+                            <NotificationsIcon />
+                        </IconButton>
+                        <Popover
+                            id={idN}
+                            open={openN}
+                            anchorEl={anchorElN}
+                            onClose={handleCloseN}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'center',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                        >
+
+                            <Messages />
+                        </Popover>
+                        <IconButton aria-describedby={idP} onClick={handleClickP}>
+                            <Person />
+                        </IconButton>
+                        <Popover
+                            id={idP}
+                            open={openP}
+                            anchorEl={anchorElP}
+                            onClose={handleCloseP}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'center',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                        >
+                            <Card className={classes.root} variant="outlined">
+                                <CardContent>
+                                    <Typography variant="h5" component="h2">
+                                        {authUser.username}
+                                    </Typography>
+                                    <Typography className={classes.title} color="textSecondary" gutterBottom>
+                                        {authUser.email}
+                                    </Typography>
+                                    <Divider></Divider>
+                                </CardContent>
+                                <CardActions>
+                                    <IconButton component={Link} to={ROUTES.ACCOUNT} ><SettingIcon /></IconButton>
+                                    <IconButton onClick={firebase.doSignOut}>
+                                        <PowerSettingsNewIcon />
+                                    </IconButton>
+                                </CardActions>
+                            </Card>
+                        </Popover>
+                    </div>}
             </Toolbar>
-        </AppBar>
+        </AppBar >
     );
 }
 
-export default TopMenu;
+export default withFirebase(TopMenu);

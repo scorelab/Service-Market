@@ -1,73 +1,39 @@
+import { Avatar, Button, ButtonGroup, Divider, IconButton, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@material-ui/core';
 import React, { Component } from 'react';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 class MessageItem extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      editMode: false,
-      editText: this.props.message.text,
-    };
-  }
-
-  onToggleEditMode = () => {
-    this.setState(state => ({
-      editMode: !state.editMode,
-      editText: this.props.message.text,
-    }));
-  };
-
-  onChangeEditText = event => {
-    this.setState({ editText: event.target.value });
-  };
-
-  onSaveEditText = () => {
-    this.props.onEditMessage(this.props.message, this.state.editText);
-
-    this.setState({ editMode: false });
-  };
 
   render() {
-    const { authUser, message, onRemoveMessage } = this.props;
-    const { editMode, editText } = this.state;
+    const { message, onActionTaken } = this.props;
 
     return (
-      <li>
-        {editMode ? (
-          <input
-            type="text"
-            value={editText}
-            onChange={this.onChangeEditText}
-          />
-        ) : (
-          <span>
-            <strong>{message.userId}</strong> {message.text}
-            {message.editedAt && <span>(Edited)</span>}
-          </span>
-        )}
-
-        {authUser.uid === message.userId && (
-          <span>
-            {editMode ? (
-              <span>
-                <button onClick={this.onSaveEditText}>Save</button>
-                <button onClick={this.onToggleEditMode}>Reset</button>
-              </span>
-            ) : (
-              <button onClick={this.onToggleEditMode}>Edit</button>
-            )}
-
-            {!editMode && (
-              <button
-                type="button"
-                onClick={() => onRemoveMessage(message.uid)}
+      <ListItem>
+        <ListItemText
+          primary={message.type}
+          secondary={
+            <React.Fragment>
+              <Typography
+                component="span"
+                variant="body2"
+                color="textPrimary"
               >
-                Delete
-              </button>
-            )}
-          </span>
-        )}
-      </li>
+                {message.subject + ' by ' + message.from}
+              </Typography>
+            </React.Fragment>
+          }
+        />
+
+        <Divider orientation="vertical" />
+
+        <IconButton key={'btnOK'+message.uid} edge="end" onClick={()=>onActionTaken(message, true)}>
+          <CheckCircleIcon />
+        </IconButton>
+        <IconButton key={'btnNK'+message.uid} edge="end" onClick={()=>onActionTaken(message, false)}>
+          <CancelIcon />
+        </IconButton>
+      </ListItem>
     );
   }
 }
