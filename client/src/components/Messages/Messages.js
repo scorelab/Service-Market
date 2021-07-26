@@ -47,7 +47,7 @@ class Messages extends Component {
   onActionTaken = (msg, isAccepted) => {
     const { subjectId, ...subSnapshot } = msg;
     var that = this
-    var status = isAccepted? "Approved": "Rejected";
+    var status = isAccepted ? "Approved" : "Rejected";
     this.props.firebase.subscriptions().orderByKey()
       .equalTo(subjectId[0])
       .once('value', function (snap) {

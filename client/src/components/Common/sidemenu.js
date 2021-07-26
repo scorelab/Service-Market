@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -20,6 +20,8 @@ import { useSelector } from 'react-redux';
 import TouchAppIcon from '@material-ui/icons/TouchApp';
 import StreetviewIcon from '@material-ui/icons/Streetview';
 import RoomServiceIcon from '@material-ui/icons/RoomService';
+import { Web3Context } from '../Web3/context';
+import { MarketContractContext } from '../Contract/context';
 
 const drawerWidth = 240;
 
@@ -56,7 +58,12 @@ const useStyles = makeStyles(theme => ({
 
 function SideMenu() {
   const classes = useStyles();
-  const authUser = useSelector(state => state.sessionState.authUser);
+  const web3 = useContext(Web3Context)
+  const contract = useContext(MarketContractContext)
+  const [isConnected, setConnected] = useState('');
+  
+  web3.eth.net.isListening().then((connected)=>setConnected(connected));
+
   return (
     <Drawer
       open={true}
@@ -72,37 +79,29 @@ function SideMenu() {
       </Grid>
       <Divider variant="middle" />
 
-      {/* Rest of actions */}
-       <SignedMenu />
+      <div>
+        <Wallet is_connected={isConnected} />
+        <List>
+          <ExpandableMenuItem title="Service" icon={<RoomServiceIcon />}>
+            <MenuItem title="New Service" icon={<CreateOutlined />} to={ROUTES.ADD_SERVICE} />
+            <MenuItem title="My Services" icon={< ViewArray />} to={ROUTES.VIEW_SERVICE} />
+          </ExpandableMenuItem>
+          <ExpandableMenuItem title="Intermediation" icon={<StreetviewIcon />}>
+            <MenuItem title="New Intermediation" icon={<CreateOutlined />} to={ROUTES.ADD_INTERMEDIATION} />
+            <MenuItem title="My Intermediations" icon={<ViewArray />} to={ROUTES.VIEW_INTERMEDIATION} />
+          </ExpandableMenuItem>
+          <ExpandableMenuItem title="Subscription" icon={<TouchAppIcon />}>
+            <MenuItem title="New Subscription" icon={<CreateOutlined />} to={ROUTES.ADD_SUBSCRIPTION} />
+            <MenuItem title="My Subscriptions" icon={<ViewArray />} to={ROUTES.VIEW_SUBSCRIPTION} />
+          </ExpandableMenuItem>
+        </List>
+      </div>
     </Drawer>
 
   );
 }
 
-const SignedMenu = () => {
-  const classes = useStyles();
-  return (
-    <div>
-      <Wallet />
-      <List>
-        <ExpandableMenuItem title="Service" icon={<RoomServiceIcon />}>
-          <MenuItem title="New Service" icon={<CreateOutlined />} to={ROUTES.ADD_SERVICE} />
-          <MenuItem title="My Services" icon={< ViewArray />} to={ROUTES.VIEW_SERVICE} />
-        </ExpandableMenuItem>
-        <ExpandableMenuItem title="Intermediation" icon={<StreetviewIcon />}>
-          <MenuItem title="New Intermediation" icon={<CreateOutlined />} to={ROUTES.ADD_INTERMEDIATION} />
-          <MenuItem title="My Intermediations" icon={<ViewArray />} to={ROUTES.VIEW_INTERMEDIATION} />
-        </ExpandableMenuItem>
-        <ExpandableMenuItem title="Subscription" icon={<TouchAppIcon />}>
-          <MenuItem title="New Subscription" icon={<CreateOutlined />} to={ROUTES.ADD_SUBSCRIPTION} />
-          <MenuItem title="My Subscriptions" icon={<ViewArray />} to={ROUTES.VIEW_SUBSCRIPTION} />
-        </ExpandableMenuItem>
-      </List>
-    </div>
-  );
-};
-
-const Wallet = () => {
+const Wallet = (props) => {
   const classes = useStyles();
   return (
     <div className={classes.wallet}>
@@ -110,7 +109,7 @@ const Wallet = () => {
 
       <div className={classes.data}>
         <Typography color="textSecondary">
-          Status: Connected
+          Status: {props.isConnected}
         </Typography>
         <Typography color="textSecondary">
           Accounts: 10

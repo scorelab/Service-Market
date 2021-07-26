@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import getWeb3 from "./getWeb3";
 import { ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import theme from './theme'
@@ -20,33 +19,10 @@ import "./App.css";
 import * as ROUTES from './constants/routes';
 import { withAuthentication } from './components/Session';
 import Messages from "./components/Messages/Messages";
-import { drizzleConnect } from 'drizzle-react'
 import { compose } from "redux";
-import PropTypes from 'prop-types'
 import NewIntermediaryPage from "./components/Intermediation/new-intermediation";
 
 class App extends Component {
-  // state = { loading: true, drizzleState: null };
-
-  // componentDidMount = async () => {
-  //   try {
-  //     // Get network provider and web3 instance.
-  //     const web3 = await getWeb3();
-
-  //     // Get the contract instance.
-  //     const networkId = await web3.eth.net.getId();
-  //     const deployedNetwork = MarketContract.networks[networkId];
-  //     const instance = new web3.eth.Contract(
-  //       MarketContract.abi,
-  //       deployedNetwork && deployedNetwork.address,
-  //     );
-
-  //     const active_account = await web3.eth.getAccounts()[0];
-
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   render() {
     return (
@@ -78,5 +54,9 @@ class App extends Component {
   }
 }
 
-export default withAuthentication(App);
+
+export default compose(
+  withAuthentication,
+)(App);
+
 

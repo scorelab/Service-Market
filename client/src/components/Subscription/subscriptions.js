@@ -87,6 +87,10 @@ class SubscriptionPage extends Component {
     this.setState({ isOpen: false, subList: [] });
   };
 
+  createContract() {
+    this.setState({ isOpen: false, subList: [] });
+  };
+
   render() {
     const {
       subscriptions,
@@ -139,7 +143,10 @@ class SubscriptionPage extends Component {
           </DialogContent>
           <DialogActions>
             <Button onClick={this.handleClose} color="primary">
-              Ok
+              Create Contract
+            </Button>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
             </Button>
           </DialogActions>
         </Dialog>
