@@ -48,6 +48,7 @@ class SubscriptionPage extends Component {
     super(props);
     this.handleClickOpen = this.handleClickOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    this.handleCreate = this.handleCreate.bind(this);
 
     this.state = {
       loading: false,
@@ -79,16 +80,16 @@ class SubscriptionPage extends Component {
     this.props.firebase.subscriptions().off();
   }
 
-  handleClickOpen(list) {
-    this.setState({ isOpen: true, subList: list });
+  handleClickOpen(list, item) {
+    this.setState({ isOpen: true, subList: list, activeItemId:item });
   };
 
   handleClose() {
     this.setState({ isOpen: false, subList: [] });
   };
 
-  createContract() {
-    this.setState({ isOpen: false, subList: [] });
+  handleCreate() {
+    console.log(this.state.activeItemId);
   };
 
   render() {
@@ -123,7 +124,7 @@ class SubscriptionPage extends Component {
                     <TableCell align="right">{row.status}</TableCell>
                     <TableCell align="right">
                       <ButtonGroup variant="text" color="primary" size="large" aria-label="text primary button group">
-                        <Button><VisibilityIcon onClick={() => this.handleClickOpen(row.subList)} /></Button>
+                        <Button><VisibilityIcon onClick={() => this.handleClickOpen(row.subList,k)} /></Button>
                         <Button><LockIcon /></Button>
                       </ButtonGroup>
                     </TableCell>
@@ -137,12 +138,12 @@ class SubscriptionPage extends Component {
 
         {!subscriptions && <div>There are no subscriptions ...</div>}
         <Dialog open={isOpen} aria-labelledby="form-dialog-title">
-          <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+          <DialogTitle id="dialog">Subscribe</DialogTitle>
           <DialogContent>
             <SubscriptionList subList={this.state.subList} />
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
+            <Button onClick={this.handleCreate} color="primary">
               Create Contract
             </Button>
             <Button onClick={this.handleClose} color="primary">

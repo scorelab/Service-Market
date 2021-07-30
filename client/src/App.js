@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useContext } from "react";
 import { ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import theme from './theme'
@@ -21,18 +21,21 @@ import { withAuthentication } from './components/Session';
 import Messages from "./components/Messages/Messages";
 import { compose } from "redux";
 import NewIntermediaryPage from "./components/Intermediation/new-intermediation";
+import { W3Provider } from "./components/Web3";
 
 class App extends Component {
 
   render() {
-    return (
 
+    return (
       <div className="App">
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <div style={{display: 'flex'}}>
+          <div style={{ display: 'flex' }}>
             <TopMenu />
-            <SideMenu />
+            <W3Provider>
+              <SideMenu />
+            </W3Provider>
             <Switch>
               <Route exact from={ROUTES.LANDING} render={props => <ServicePage {...props} />} />
               <Route exact from={ROUTES.VIEW_SERVICE} render={props => <ServicePage {...props} />} />
@@ -45,7 +48,7 @@ class App extends Component {
               <Route exact from={ROUTES.SIGN_IN} render={props => <SignInPage {...props} />} />
               <Route exact from={ROUTES.ACCOUNT} render={props => <AccountPage {...props} />} />
               <Route exact from={ROUTES.NOTIFICATIONS} render={props => <Messages {...props} />} />
-            </Switch>      
+            </Switch>
             <Footer />
           </div>
         </ThemeProvider>

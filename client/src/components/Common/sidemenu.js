@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -16,12 +16,10 @@ import { Box, Button, Divider, Typography } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
 import * as ROUTES from '../../constants/routes';
 import { Link } from "react-router-dom";
-import { useSelector } from 'react-redux';
 import TouchAppIcon from '@material-ui/icons/TouchApp';
 import StreetviewIcon from '@material-ui/icons/Streetview';
 import RoomServiceIcon from '@material-ui/icons/RoomService';
-import { Web3Context } from '../Web3/context';
-import { MarketContractContext } from '../Contract/context';
+import W3Context from '../Web3/context';
 
 const drawerWidth = 240;
 
@@ -33,11 +31,6 @@ const useStyles = makeStyles(theme => ({
   drawerPaper: {
     width: drawerWidth,
     backgroundImage: `linear-gradient(#cfd9df,#e2ebf0)`,
-  },
-  bigAvatar: {
-    margin: 30,
-    width: 100,
-    height: 100,
   },
   wallet: {
     padding: theme.spacing(5),
@@ -58,13 +51,14 @@ const useStyles = makeStyles(theme => ({
 
 function SideMenu() {
   const classes = useStyles();
-  const web3 = useContext(Web3Context)
-  const contract = useContext(MarketContractContext)
-  const [isConnected, setConnected] = useState('');
-  
-  web3.eth.net.isListening().then((connected)=>setConnected(connected));
+  const w3 = useContext(W3Context);
+  const [isConnected, setConnected] = useState(false);
 
-  return (
+  useEffect(() => {
+    setConnected(!w3.loading,[isConnected]);
+  });
+
+  return (    
     <Drawer
       open={true}
       variant='permanent'
@@ -109,7 +103,7 @@ const Wallet = (props) => {
 
       <div className={classes.data}>
         <Typography color="textSecondary">
-          Status: {props.isConnected}
+          {props.isConnected? "Connected":"Not Connected" }
         </Typography>
         <Typography color="textSecondary">
           Accounts: 10

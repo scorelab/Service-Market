@@ -53,7 +53,7 @@ export default function SubscriptionList(props) {
                 </TableHead>
                 <TableBody>
                     {props.subList.map((row) => (
-                        <TableRow key={row.sid}>
+                        <TableRow key={"sid"+row.sid}>
                             <TableCell>{row.serviceName}</TableCell>
                             <TableCell align="right">{row.intermediaryName}</TableCell>
                             <TableCell align="right">{row.startDate && row.startDate.format("DD MMMM YYYY")}</TableCell>
