@@ -6,7 +6,6 @@ import * as ROLES from '../../constants/roles';
 import * as ERRORS from '../../constants/errors';
 import MainBlock from '../Common/main-block';
 import 'firebase/firestore';
-
 import {
   Typography,
   Grid,
@@ -31,6 +30,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { green } from '@material-ui/core/colors';
 import { SERVICE_TYPES } from '../../constants/constants';
+import { MerkleTree } from '../../util/MerkelUtil';
 
 function NewServicePage(props) {
 
@@ -83,6 +83,21 @@ class NewServiceFormBase extends Component {
     this.state = { ...INITIAL_STATE };
   }
 
+  getRandomNumbers = (start, end) =>{
+    const crypto = require("crypto");
+    const duration = moment.duration(end.diff(start)).asDays().toFixed(0);
+    return new Array(parseInt(duration)+1).fill().map(() => "0x" + crypto.randomBytes(16).toString("hex"));
+  }
+
+  downloadTxtFile = (secrets) => {
+    const element = document.createElement("a");
+    const file = new Blob([secrets.join("\r\n")], {type: 'text/plain',endings:'native'});
+    element.href = URL.createObjectURL(file);
+    element.download = "secretes.txt";
+    document.body.appendChild(element); // Required for this to work in FireFox
+    element.click();
+  }
+
   onSubmit = (event, authUser) => {
     event.preventDefault();
     const {
@@ -97,6 +112,8 @@ class NewServiceFormBase extends Component {
       intermediaries
     } = this.state;
 
+    const secrets = this.getRandomNumbers(startDate,endDate);
+    const mt = new MerkleTree()
     this.props.firebase.services().push({
       producer: authUser.uid,
       serviceName: serviceName,
@@ -108,8 +125,10 @@ class NewServiceFormBase extends Component {
       endDate: endDate.valueOf(),
       unitValue: unitValue,
       createdAt: this.props.firebase.serverValue.TIMESTAMP,
+      hashes: secrets.map((e)=> "0x"+mt.H(e).toString('hex'))
     }).then(() => {
       this.setState({ ...INITIAL_STATE });
+      this.downloadTxtFile(secrets)
     }).catch(error => {
       this.setState({ error });
     });
