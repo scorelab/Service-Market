@@ -30,7 +30,7 @@ export const W3Provider = ({ children }) => {
     if (accounts.length > 0) {
       const account = accounts[0];
       const balance = await web3.eth.getBalance(account);
-      const balanceEth = web3.utils.toWei(balance, 'ether');
+      const balanceEth = web3.utils.fromWei(balance, 'ether');
       setW3Values({ loading: false, web3: web3, contract: contract, account: account, balance: balanceEth })
     } else {
       setW3Values({ ...w3State, loading: true })
@@ -43,7 +43,7 @@ export const W3Provider = ({ children }) => {
       if (accounts.length > 0) {
         const account = accounts[0];
         const balance = await w3State.web3.eth.getBalance(account);
-        const balanceEth = w3State.web3.utils.toWei(balance, 'ether');
+        const balanceEth = w3State.web3.utils.fromWei(balance, 'ether');
         setW3Values({ ...w3State, account: account, balance: balanceEth })
       } else {
         setW3Values({ ...INITIAL_STATE })

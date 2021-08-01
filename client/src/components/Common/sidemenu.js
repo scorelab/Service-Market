@@ -49,6 +49,11 @@ const useStyles = makeStyles(theme => ({
       display: 'block',
     },
   },
+  walletText: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  }
 }));
 
 function SideMenu() {
@@ -94,7 +99,7 @@ function SideMenu() {
 }
 
 const Wallet = (props) => {
-  
+
   const classes = useStyles();
   const { loading, account, contract, balance, refresh } = useContext(W3Context);
   const handleRefresh = () => {
@@ -103,17 +108,23 @@ const Wallet = (props) => {
 
   return (
     <div className={classes.wallet}>
-      <Typography variant="h6">Wallet</Typography>
-      <IconButton aria-label="delete" onClick={handleRefresh}><SyncIcon/></IconButton>
+      <Grid container className={classes.walletText}>
+        <Grid item xs={6}>
+          <Typography variant="h5" flex >Wallet</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <IconButton aria-label="delete" onClick={handleRefresh}><SyncIcon /></IconButton>
+        </Grid>
+      </Grid>
       <div className={classes.data}>
         <Typography color="textSecondary">
-          {!!account ? "Connected" : "Not Connected"}
+          Status: {!!account ? "Connected" : "Not Connected"}
         </Typography>
         <Typography color="textSecondary">
-          Account: {account?account.toString().replace(account.toString().substring(4, 40), "***"):' -'}
+          Account: {account ? account.toString().replace(account.toString().substring(4, 40), "***") : ' -'}
         </Typography>
         <Typography color="textSecondary">
-          Balance: {account? balance +" Eth": ' -'}
+          Balance: {account ? Number(balance).toFixed(3) + " Eth" : ' -'}
         </Typography>
       </div>
       <Button size="small">See More</Button>
