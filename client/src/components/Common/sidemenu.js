@@ -12,7 +12,7 @@ import Work from '@material-ui/icons/Work';
 import CreateOutlined from '@material-ui/icons/CreateOutlined';
 import ViewArray from '@material-ui/icons/ViewArray';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Button, Divider, Typography } from '@material-ui/core';
+import { Box, Button, Divider, IconButton, Typography } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
 import * as ROUTES from '../../constants/routes';
 import { Link } from "react-router-dom";
@@ -20,6 +20,8 @@ import TouchAppIcon from '@material-ui/icons/TouchApp';
 import StreetviewIcon from '@material-ui/icons/Streetview';
 import RoomServiceIcon from '@material-ui/icons/RoomService';
 import W3Context from '../Web3/context';
+import { W3Provider } from '../Web3';
+import SyncIcon from '@material-ui/icons/Sync';
 
 const drawerWidth = 240;
 
@@ -51,14 +53,8 @@ const useStyles = makeStyles(theme => ({
 
 function SideMenu() {
   const classes = useStyles();
-  const w3 = useContext(W3Context);
-  const [isConnected, setConnected] = useState(false);
 
-  useEffect(() => {
-    setConnected(!w3.loading,[isConnected]);
-  });
-
-  return (    
+  return (
     <Drawer
       open={true}
       variant='permanent'
@@ -74,7 +70,9 @@ function SideMenu() {
       <Divider variant="middle" />
 
       <div>
-        <Wallet is_connected={isConnected} />
+        <W3Provider>
+          <Wallet />
+        </W3Provider>
         <List>
           <ExpandableMenuItem title="Service" icon={<RoomServiceIcon />}>
             <MenuItem title="New Service" icon={<CreateOutlined />} to={ROUTES.ADD_SERVICE} />
@@ -96,23 +94,28 @@ function SideMenu() {
 }
 
 const Wallet = (props) => {
+  
   const classes = useStyles();
+  const { loading, account, contract, balance, refresh } = useContext(W3Context);
+  const handleRefresh = () => {
+    refresh()
+  };
+
   return (
     <div className={classes.wallet}>
       <Typography variant="h6">Wallet</Typography>
-
+      <IconButton aria-label="delete" onClick={handleRefresh}><SyncIcon/></IconButton>
       <div className={classes.data}>
         <Typography color="textSecondary">
-          {props.isConnected? "Connected":"Not Connected" }
+          {!!account ? "Connected" : "Not Connected"}
         </Typography>
         <Typography color="textSecondary">
-          Accounts: 10
+          Account: {account?account.toString().replace(account.toString().substring(4, 40), "***"):' -'}
         </Typography>
         <Typography color="textSecondary">
-          Balance: 0.5 Eth
+          Balance: {account? balance +" Eth": ' -'}
         </Typography>
       </div>
-
       <Button size="small">See More</Button>
     </div>
   );

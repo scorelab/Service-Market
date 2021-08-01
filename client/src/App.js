@@ -33,9 +33,7 @@ class App extends Component {
           <CssBaseline />
           <div style={{ display: 'flex' }}>
             <TopMenu />
-            <W3Provider>
-              <SideMenu />
-            </W3Provider>
+            <SideMenu />
             <Switch>
               <Route exact from={ROUTES.LANDING} render={props => <ServicePage {...props} />} />
               <Route exact from={ROUTES.VIEW_SERVICE} render={props => <ServicePage {...props} />} />
@@ -43,7 +41,7 @@ class App extends Component {
               <Route exact from={ROUTES.VIEW_SUBSCRIPTION} render={props => <SubscriptionPage {...props} />} />
               <Route exact from={ROUTES.ADD_SUBSCRIPTION} render={props => <NewSubscriptionPage {...props} />} />
               <Route exact from={ROUTES.ADD_INTERMEDIATION} render={props => <NewIntermediaryPage {...props} />} />
-              <Route exact from={ROUTES.ADD_SERVICE} render={() => <NewServicePage/>} />
+              <Route exact from={ROUTES.ADD_SERVICE} render={() => <NewServicePage />} />
               <Route exact from={ROUTES.SIGN_UP} render={props => <SignUpPage {...props} />} />
               <Route exact from={ROUTES.SIGN_IN} render={props => <SignInPage {...props} />} />
               <Route exact from={ROUTES.ACCOUNT} render={props => <AccountPage {...props} />} />
