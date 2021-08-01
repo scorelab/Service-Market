@@ -28,6 +28,7 @@ import "react-dates/lib/css/_datepicker.css";
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { SERVICE_TYPES } from '../../constants/constants';
+import AddressButton from '../Common/address';
 
 function NewIntermediaryPage(props) {
 
@@ -44,6 +45,7 @@ const INITIAL_STATE = {
   intermediaryType: '',
   focusedInput: null,
   brokerFee: '',
+  address:'',
   error: null,
 };
 
@@ -81,6 +83,7 @@ class NewIntermediaryFormBase extends Component {
       intermediaryDetails,
       intermediaryType,
       brokerFee,
+      address,
     } = this.state;
 
     this.props.firebase.intermediaries().push({
@@ -89,6 +92,7 @@ class NewIntermediaryFormBase extends Component {
       intermediaryDetails: intermediaryDetails,
       intermediaryType: intermediaryType,
       brokerFee: brokerFee,
+      address: address,
       createdAt: this.props.firebase.serverValue.TIMESTAMP,
     }).then(() => {
       this.setState({ ...INITIAL_STATE });
@@ -102,6 +106,10 @@ class NewIntermediaryFormBase extends Component {
     this.setState({ [event.target.name]: event.target.value });
   };
 
+  onChangeAddress = (address) => {
+    this.setState({ ['address']: address });
+  };
+
   render() {
     const {
       intermediaryName,
@@ -109,6 +117,7 @@ class NewIntermediaryFormBase extends Component {
       intermediaryType,
       brokerFee,
       focusedInput,
+      address,
       error,
 
     } = this.state;
@@ -186,6 +195,25 @@ class NewIntermediaryFormBase extends Component {
               </Grid>
             </Grid>
           </Grid>
+
+          <Grid container spacing={4}>
+            <Grid item xs={11}>
+              <FormControl variant="outlined" fullWidth>
+                <InputLabel htmlFor="address" >Address</InputLabel>
+                <OutlinedInput
+                  id="address"
+                  name="address"
+                  value={address}
+                  label="Address"
+                  onChange={this.onChange}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1}>
+              <AddressButton setAddress={this.onChangeAddress} />
+            </Grid>
+          </Grid>
+
           <Grid container spacing={4} justify="flex-end">
             <Grid item xs={2}>
               <Button type="submit" fullWidth disabled={isInvalid} variant="contained" color="primary" >Save</Button>

@@ -32,9 +32,7 @@ import { connect } from 'react-redux';
 import { green } from '@material-ui/core/colors';
 import { SERVICE_TYPES } from '../../constants/constants';
 import { MerkleTree } from '../../util/MerkelUtil';
-import W3Context from '../Web3/context';
-import SyncIcon from '@material-ui/icons/Sync';
-import { W3Provider } from '../Web3';
+import AddressButton from '../Common/address'
 
 function NewServicePage(props) {
 
@@ -147,7 +145,7 @@ class NewServiceFormBase extends Component {
   onChangeAddress = (address) => {
     this.setState({ ['address']: address });
   };
-  
+
   componentDidMount() {
     if (!this.state.intermediaries.length) {
       this.setState({ loading: true });
@@ -311,7 +309,7 @@ class NewServiceFormBase extends Component {
               </FormControl>
             </Grid>
             <Grid item xs={1}>
-              <W3Provider><AddressButton setAddress={this.onChangeAddress} /></W3Provider>
+              <AddressButton setAddress={this.onChangeAddress} />
             </Grid>
           </Grid>
 
@@ -327,13 +325,6 @@ class NewServiceFormBase extends Component {
       </div>
     );
   }
-}
-
-const AddressButton = (props) => {
-  const { account, refresh } = useContext(W3Context);
-  return (
-    <IconButton aria-label="delete" onClick={()=>props.setAddress(account)}><SyncIcon /></IconButton>
-  );
 }
 
 const mapStateToProps = state => ({
