@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -52,12 +53,12 @@ export default function SubscriptionList(props) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {props.subList.map((row) => (
-                        <TableRow key={"sid"+row.sid}>
+                    {props.subList.map((row,i) => (
+                        <TableRow key={i}>
                             <TableCell>{row.serviceName}</TableCell>
                             <TableCell align="right">{row.intermediaryName}</TableCell>
-                            <TableCell align="right">{row.startDate && row.startDate.format("DD MMMM YYYY")}</TableCell>
-                            <TableCell align="right">{row.endDate && row.endDate.format("DD MMMM YYYY")}</TableCell>
+                            <TableCell align="right">{row.startDate && moment(row.startDate).format("DD MMMM YYYY")}</TableCell>
+                            <TableCell align="right">{row.endDate && moment(row.endDate).format("DD MMMM YYYY")}</TableCell>
                             <TableCell align="right">{row.status}</TableCell>
                             <TableCell align="right">{row.value}</TableCell>
                             <TableCell align="right">
@@ -72,7 +73,7 @@ export default function SubscriptionList(props) {
                     <TableRow>
                         <TableCell colSpan={4} />
                         <TableCell colSpan={1}>Total</TableCell>
-                        <TableCell align="right">{props.subList.reduce((x, y) => x.value + y.value,0)}</TableCell>
+                        <TableCell align="right">{props.subList.reduce((sum, item) => sum + item.value,0)}</TableCell>
                     </TableRow>
                 </TableBody>
             </Table>
