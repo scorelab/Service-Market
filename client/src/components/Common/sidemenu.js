@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -12,14 +12,16 @@ import Work from '@material-ui/icons/Work';
 import CreateOutlined from '@material-ui/icons/CreateOutlined';
 import ViewArray from '@material-ui/icons/ViewArray';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Button, Divider, Typography } from '@material-ui/core';
+import { Box, Button, Divider, IconButton, Typography } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
 import * as ROUTES from '../../constants/routes';
 import { Link } from "react-router-dom";
-import { useSelector } from 'react-redux';
 import TouchAppIcon from '@material-ui/icons/TouchApp';
 import StreetviewIcon from '@material-ui/icons/Streetview';
 import RoomServiceIcon from '@material-ui/icons/RoomService';
+import W3Context from '../Web3/context';
+import { W3Provider } from '../Web3';
+import SyncIcon from '@material-ui/icons/Sync';
 
 const drawerWidth = 240;
 
@@ -31,11 +33,6 @@ const useStyles = makeStyles(theme => ({
   drawerPaper: {
     width: drawerWidth,
     backgroundImage: `linear-gradient(#cfd9df,#e2ebf0)`,
-  },
-  bigAvatar: {
-    margin: 30,
-    width: 100,
-    height: 100,
   },
   wallet: {
     padding: theme.spacing(5),
@@ -52,11 +49,16 @@ const useStyles = makeStyles(theme => ({
       display: 'block',
     },
   },
+  walletText: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  }
 }));
 
 function SideMenu() {
   const classes = useStyles();
-  const authUser = useSelector(state => state.sessionState.authUser);
+
   return (
     <Drawer
       open={true}
@@ -72,54 +74,59 @@ function SideMenu() {
       </Grid>
       <Divider variant="middle" />
 
-      {/* Rest of actions */}
-       <SignedMenu />
+      <div>
+        <W3Provider>
+          <Wallet />
+        </W3Provider>
+        <List>
+          <ExpandableMenuItem title="Service" icon={<RoomServiceIcon />}>
+            <MenuItem title="New Service" icon={<CreateOutlined />} to={ROUTES.ADD_SERVICE} />
+            <MenuItem title="My Services" icon={< ViewArray />} to={ROUTES.VIEW_SERVICE} />
+          </ExpandableMenuItem>
+          <ExpandableMenuItem title="Intermediation" icon={<StreetviewIcon />}>
+            <MenuItem title="New Intermediation" icon={<CreateOutlined />} to={ROUTES.ADD_INTERMEDIATION} />
+            <MenuItem title="My Intermediations" icon={<ViewArray />} to={ROUTES.VIEW_INTERMEDIATION} />
+          </ExpandableMenuItem>
+          <ExpandableMenuItem title="Subscription" icon={<TouchAppIcon />}>
+            <MenuItem title="New Subscription" icon={<CreateOutlined />} to={ROUTES.ADD_SUBSCRIPTION} />
+            <MenuItem title="My Subscriptions" icon={<ViewArray />} to={ROUTES.VIEW_SUBSCRIPTION} />
+          </ExpandableMenuItem>
+        </List>
+      </div>
     </Drawer>
 
   );
 }
 
-const SignedMenu = () => {
-  const classes = useStyles();
-  return (
-    <div>
-      <Wallet />
-      <List>
-        <ExpandableMenuItem title="Service" icon={<RoomServiceIcon />}>
-          <MenuItem title="New Service" icon={<CreateOutlined />} to={ROUTES.ADD_SERVICE} />
-          <MenuItem title="My Services" icon={< ViewArray />} to={ROUTES.VIEW_SERVICE} />
-        </ExpandableMenuItem>
-        <ExpandableMenuItem title="Intermediation" icon={<StreetviewIcon />}>
-          <MenuItem title="New Intermediation" icon={<CreateOutlined />} to={ROUTES.ADD_INTERMEDIATION} />
-          <MenuItem title="My Intermediations" icon={<ViewArray />} to={ROUTES.VIEW_INTERMEDIATION} />
-        </ExpandableMenuItem>
-        <ExpandableMenuItem title="Subscription" icon={<TouchAppIcon />}>
-          <MenuItem title="New Subscription" icon={<CreateOutlined />} to={ROUTES.ADD_SUBSCRIPTION} />
-          <MenuItem title="My Subscriptions" icon={<ViewArray />} to={ROUTES.VIEW_SUBSCRIPTION} />
-        </ExpandableMenuItem>
-      </List>
-    </div>
-  );
-};
+const Wallet = (props) => {
 
-const Wallet = () => {
   const classes = useStyles();
+  const { loading, account, contract, balance, refresh } = useContext(W3Context);
+  const handleRefresh = () => {
+    refresh()
+  };
+
   return (
     <div className={classes.wallet}>
-      <Typography variant="h6">Wallet</Typography>
-
+      <Grid container className={classes.walletText}>
+        <Grid item xs={6}>
+          <Typography variant="h5" flex >Wallet</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <IconButton aria-label="delete" onClick={handleRefresh}><SyncIcon /></IconButton>
+        </Grid>
+      </Grid>
       <div className={classes.data}>
         <Typography color="textSecondary">
-          Status: Connected
+          Status: {!!account ? "Connected" : "Not Connected"}
         </Typography>
         <Typography color="textSecondary">
-          Accounts: 10
+          Account: {account ? account.toString().replace(account.toString().substring(4, 40), "***") : ' -'}
         </Typography>
         <Typography color="textSecondary">
-          Balance: 0.5 Eth
+          Balance: {account ? Number(balance).toFixed(3) + " Eth" : ' -'}
         </Typography>
       </div>
-
       <Button size="small">See More</Button>
     </div>
   );

@@ -9,19 +9,18 @@ import store from './store';
 
 const rootElement = document.getElementById("root");
 
-
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-    <FirebaseContext.Provider value={new Firebase()}>
-        <Router>
-          <CssBaseline />
-          <App />
-        </Router>
-        </FirebaseContext.Provider>
-    </Provider>
+        <Provider store={store}>
+          <FirebaseContext.Provider value={new Firebase()}>
+            <Router>
+              <CssBaseline />
+              <App />
+            </Router>
+          </FirebaseContext.Provider>
+        </Provider>
   </React.StrictMode>,
   rootElement
 );
 
- 
+

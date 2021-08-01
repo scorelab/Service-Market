@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useContext } from 'react';
 import MainBlock from '../Common/main-block';
 import ShowCase from '../Common/grid';
 import { withFirebase } from '../Firebase';
@@ -39,6 +39,8 @@ import {
 import LockIcon from '@material-ui/icons/Lock';
 import moment from 'moment';
 import SubscriptionList from './sub-list';
+import { W3Provider } from '../Web3';
+import W3Context from '../Web3/context';
 
 
 
@@ -79,8 +81,8 @@ class SubscriptionPage extends Component {
     this.props.firebase.subscriptions().off();
   }
 
-  handleClickOpen(list) {
-    this.setState({ isOpen: true, subList: list });
+  handleClickOpen(list, item) {
+    this.setState({ isOpen: true, subList: list, activeItemId: item });
   };
 
   handleClose() {
@@ -119,7 +121,7 @@ class SubscriptionPage extends Component {
                     <TableCell align="right">{row.status}</TableCell>
                     <TableCell align="right">
                       <ButtonGroup variant="text" color="primary" size="large" aria-label="text primary button group">
-                        <Button><VisibilityIcon onClick={() => this.handleClickOpen(row.subList)} /></Button>
+                        <Button><VisibilityIcon onClick={() => this.handleClickOpen(row.subList, k)} /></Button>
                         <Button><LockIcon /></Button>
                       </ButtonGroup>
                     </TableCell>
@@ -132,22 +134,51 @@ class SubscriptionPage extends Component {
         }
 
         {!subscriptions && <div>There are no subscriptions ...</div>}
-        <Dialog open={isOpen} aria-labelledby="form-dialog-title">
-          <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
-          <DialogContent>
-            <SubscriptionList subList={this.state.subList} />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
-              Ok
-            </Button>
-          </DialogActions>
-        </Dialog>
+
+        <W3Provider>
+          <SubscriptionDialog
+            isOpen={this.state.isOpen}
+            subList={this.state.subList}
+            handleClose={this.handleClose}
+            activeItemId={this.state.activeItemId} 
+            firebase={this.props.firebase}/>
+        </W3Provider>
       </MainBlock>
     );
   }
 }
 
+const SubscriptionDialog = (props) => {
+  const { isOpen, subList, handleClose, activeItemId, firebase } = props
+  const { createContract } = useContext(W3Context);
+
+  const handleCreate = async () => {
+    const {account, index} = await createContract(activeItemId)
+    firebase.subscription(activeItemId).update({
+      'status': "Lock Created",
+      'index': index,
+      'account': account
+    });
+    handleClose();
+  };
+
+  return (
+    <Dialog open={isOpen} maxWidth="lg" aria-labelledby="form-dialog-title">
+      <DialogTitle id="dialog">Subscribe</DialogTitle>
+      <DialogContent>
+        <SubscriptionList subList={subList?subList:[]} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCreate} color="primary">
+          Create Contract
+        </Button>
+        <Button onClick={handleClose} color="primary">
+          Cancel
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
 
 const mapStateToProps = state => ({

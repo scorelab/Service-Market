@@ -1,5 +1,11 @@
 import Web3 from "web3";
 
+const config = {
+  w3_host: process.env.W3_HOST,
+  w3_port: process.env.W3_PORT,
+};
+
+
 const getWeb3 = () =>
   new Promise((resolve, reject) => {
     // Wait for loading completion to avoid race conditions with web3 injection timing.

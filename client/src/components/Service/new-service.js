@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useContext, useState } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
@@ -6,7 +6,6 @@ import * as ROLES from '../../constants/roles';
 import * as ERRORS from '../../constants/errors';
 import MainBlock from '../Common/main-block';
 import 'firebase/firestore';
-
 import {
   Typography,
   Grid,
@@ -20,6 +19,7 @@ import {
   InputLabel,
   InputAdornment,
   Box,
+  IconButton,
 } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import "react-dates/initialize";
@@ -31,6 +31,8 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { green } from '@material-ui/core/colors';
 import { SERVICE_TYPES } from '../../constants/constants';
+import { MerkleTree } from '../../util/MerkelUtil';
+import AddressButton from '../Common/address'
 
 function NewServicePage(props) {
 
@@ -51,7 +53,7 @@ const INITIAL_STATE = {
   intermediary: '',
   resolution: '',
   unitValue: '',
-  loading: '',
+  address: '',
   intermediaries: [],
   error: null,
 };
@@ -83,6 +85,21 @@ class NewServiceFormBase extends Component {
     this.state = { ...INITIAL_STATE };
   }
 
+  getRandomNumbers = (start, end) => {
+    const crypto = require("crypto");
+    const duration = moment.duration(end.diff(start)).asDays().toFixed(0);
+    return new Array(parseInt(duration) + 1).fill().map(() => "0x" + crypto.randomBytes(16).toString("hex"));
+  }
+
+  downloadTxtFile = (secrets) => {
+    const element = document.createElement("a");
+    const file = new Blob([secrets.join("\r\n")], { type: 'text/plain', endings: 'native' });
+    element.href = URL.createObjectURL(file);
+    element.download = "secretes.txt";
+    document.body.appendChild(element); // Required for this to work in FireFox
+    element.click();
+  }
+
   onSubmit = (event, authUser) => {
     event.preventDefault();
     const {
@@ -93,10 +110,12 @@ class NewServiceFormBase extends Component {
       startDate,
       endDate,
       unitValue,
-      loading,
+      address,
       intermediaries
     } = this.state;
 
+    const secrets = this.getRandomNumbers(startDate, endDate);
+    const mt = new MerkleTree()
     this.props.firebase.services().push({
       producer: authUser.uid,
       serviceName: serviceName,
@@ -106,10 +125,13 @@ class NewServiceFormBase extends Component {
       intermediaryName: intermediaries[intermediary].intermediaryName,
       startDate: startDate.valueOf(),
       endDate: endDate.valueOf(),
+      address: address,
       unitValue: unitValue,
       createdAt: this.props.firebase.serverValue.TIMESTAMP,
+      hashes: secrets.map((e) => "0x" + mt.H(e).toString('hex'))
     }).then(() => {
       this.setState({ ...INITIAL_STATE });
+      this.downloadTxtFile(secrets)
     }).catch(error => {
       this.setState({ error });
     });
@@ -118,6 +140,10 @@ class NewServiceFormBase extends Component {
 
   onChange = event => {
     this.setState({ [event.target.name]: event.target.value });
+  };
+
+  onChangeAddress = (address) => {
+    this.setState({ ['address']: address });
   };
 
   componentDidMount() {
@@ -148,13 +174,12 @@ class NewServiceFormBase extends Component {
       unitValue,
       focusedInput,
       intermediaries,
-      loading,
+      address,
       error,
 
     } = this.state;
 
-    const isInvalid =
-      serviceName === '';
+    const isInvalid = serviceName === '';
 
     const { classes } = this.props;
     return (
@@ -246,7 +271,6 @@ class NewServiceFormBase extends Component {
               </FormControl>
             </Grid>
             <Grid item xs={6}  >
-
               <Box display="flex" borderRadius={3} padding={0.5} border={1} borderColor="silver">
                 <FormControlLabel
                   control={
@@ -271,6 +295,24 @@ class NewServiceFormBase extends Component {
               </Box>
             </Grid>
           </Grid>
+          <Grid container spacing={4}>
+            <Grid item xs={11}>
+              <FormControl variant="outlined" fullWidth>
+                <InputLabel htmlFor="address" >Address</InputLabel>
+                <OutlinedInput
+                  id="address"
+                  name="address"
+                  value={address}
+                  label="Address"
+                  onChange={this.onChange}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={1}>
+              <AddressButton setAddress={this.onChangeAddress} />
+            </Grid>
+          </Grid>
+
           <Grid container spacing={4} justify="flex-end">
             <Grid item xs={2}>
               <Button type="submit" fullWidth disabled={isInvalid} variant="contained" color="primary" >Save</Button>

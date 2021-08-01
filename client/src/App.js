@@ -1,5 +1,4 @@
-import React, { Component } from "react";
-import getWeb3 from "./getWeb3";
+import React, { Component, useContext } from "react";
 import { ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import theme from './theme'
@@ -20,41 +19,19 @@ import "./App.css";
 import * as ROUTES from './constants/routes';
 import { withAuthentication } from './components/Session';
 import Messages from "./components/Messages/Messages";
-import { drizzleConnect } from 'drizzle-react'
 import { compose } from "redux";
-import PropTypes from 'prop-types'
 import NewIntermediaryPage from "./components/Intermediation/new-intermediation";
+import { W3Provider } from "./components/Web3";
 
 class App extends Component {
-  // state = { loading: true, drizzleState: null };
-
-  // componentDidMount = async () => {
-  //   try {
-  //     // Get network provider and web3 instance.
-  //     const web3 = await getWeb3();
-
-  //     // Get the contract instance.
-  //     const networkId = await web3.eth.net.getId();
-  //     const deployedNetwork = MarketContract.networks[networkId];
-  //     const instance = new web3.eth.Contract(
-  //       MarketContract.abi,
-  //       deployedNetwork && deployedNetwork.address,
-  //     );
-
-  //     const active_account = await web3.eth.getAccounts()[0];
-
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   render() {
-    return (
 
+    return (
       <div className="App">
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <div style={{display: 'flex'}}>
+          <div style={{ display: 'flex' }}>
             <TopMenu />
             <SideMenu />
             <Switch>
@@ -64,12 +41,12 @@ class App extends Component {
               <Route exact from={ROUTES.VIEW_SUBSCRIPTION} render={props => <SubscriptionPage {...props} />} />
               <Route exact from={ROUTES.ADD_SUBSCRIPTION} render={props => <NewSubscriptionPage {...props} />} />
               <Route exact from={ROUTES.ADD_INTERMEDIATION} render={props => <NewIntermediaryPage {...props} />} />
-              <Route exact from={ROUTES.ADD_SERVICE} render={() => <NewServicePage/>} />
+              <Route exact from={ROUTES.ADD_SERVICE} render={() => <NewServicePage />} />
               <Route exact from={ROUTES.SIGN_UP} render={props => <SignUpPage {...props} />} />
               <Route exact from={ROUTES.SIGN_IN} render={props => <SignInPage {...props} />} />
               <Route exact from={ROUTES.ACCOUNT} render={props => <AccountPage {...props} />} />
               <Route exact from={ROUTES.NOTIFICATIONS} render={props => <Messages {...props} />} />
-            </Switch>      
+            </Switch>
             <Footer />
           </div>
         </ThemeProvider>
@@ -78,5 +55,9 @@ class App extends Component {
   }
 }
 
-export default withAuthentication(App);
+
+export default compose(
+  withAuthentication,
+)(App);
+
 
