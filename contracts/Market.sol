@@ -12,9 +12,8 @@ contract Market {
     event NewContract(uint256 index);
     event Root(bytes32 proofElement);
 
-    function newContract(bytes32 lock) public payable {
+    function newContract(bytes20 lock, uint256 expire ) public payable {
         require(msg.value > 0);
-        uint256 expire = 10;
         contracts[msg.sender].push(Contract(msg.value, lock, expire));
         uint256 id = contracts[msg.sender].length - 1;
         emit NewContract(id);

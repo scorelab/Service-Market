@@ -18,6 +18,12 @@ class MerkleTree {
         }
     }
 
+    root_slice(root){
+        const value = parseInt(root.slice(0, 6).toString('hex'), 16);
+        const lock = '0x'+root.slice(12, 32).toString('hex');
+        return [value, lock];
+    }
+
     height(l) {
         const h = Math.log2(l).toFixed(0);
         const buff = Buffer.alloc(6);
@@ -36,14 +42,13 @@ class MerkleTree {
     L(X, K, layer) {
         const l = X.length
         if (l == 1) {
-            return this.concat(K[0], this.H(X[0]));
+            return this.concat(K[0], X[0]);
         }
 
         let j = Math.pow(2, Math.trunc(Math.log2(l)));
         if (j == l) {
             j = Math.pow(2, Math.trunc(Math.log2(l - 1)));
         }
-
         return this.concat(
             this.F(X, K, layer),
             this.H(
@@ -93,25 +98,23 @@ class MerkleTree {
     LL(K) {
         var ks3 = []
         var xs3 = []
-        for (const [a, keys3] of Object.entries(K)) {
+
+        Object.entries(K).forEach(([a, keys3]) => {
             var ks2 = []
             var xs2 = []
             keys3.forEach(keys2 => {
                 const k2 = this.L(keys2[0], keys2[1], 1);
-                // this.P(k2);
                 xs2.push(k2.slice(12, 32))
                 ks2.push(k2.slice(0, 12).fill(0, 6, 12))
             });
 
             const k3 = this.L(xs2, ks2, 2);
-            // this.P(k3);
             const h3 = k3.slice(12, 32);
             const address = toBuffer(a);
             xs3.push(Buffer.concat([address, h3]));
             ks3.push(k3.slice(0, 12).fill(0, 6, 12));
-        }
-        const res = this.L(xs3, ks3, 3);
-        return res;
+        });
+        return this.L(xs3, ks3, 3);
     }
 
     WW(K, i1, i2, i3) {
