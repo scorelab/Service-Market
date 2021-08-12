@@ -53,22 +53,17 @@ export const W3Provider = ({ children }) => {
     }
   }
 
-  const createContract = async (activeItemId) => {
-    const lock = '0x100000000000000000000000000000000'
-    const expire = 100;
-    const value = w3State.web3.utils.toWei("1", "ether");
+  const createContract = async (lock, expire, value) => {
     const account = w3State.account;
-    const result = await w3State.contract.methods.newContract(lock).send(
+    const result = await w3State.contract.methods.newContract(lock, expire).send(
       {
         from: account,
         gas: 1000000,
-        value: value
+        value: w3State.web3.utils.toWei(value.toString(), "ether")
       }
     );
     const index = result.events.NewContract.returnValues.index;
-    return {account,index};
-    
-    
+    return {account, index};  
   }
 
 

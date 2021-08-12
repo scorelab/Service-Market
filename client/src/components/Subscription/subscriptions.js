@@ -41,6 +41,7 @@ import moment from 'moment';
 import SubscriptionList from './sub-list';
 import { W3Provider } from '../Web3';
 import W3Context from '../Web3/context';
+import { MerkleTree } from '../../util/MerkelUtil';
 
 
 
@@ -140,8 +141,8 @@ class SubscriptionPage extends Component {
             isOpen={this.state.isOpen}
             subList={this.state.subList}
             handleClose={this.handleClose}
-            activeItemId={this.state.activeItemId} 
-            firebase={this.props.firebase}/>
+            activeItemId={this.state.activeItemId}
+            firebase={this.props.firebase} />
         </W3Provider>
       </MainBlock>
     );
@@ -153,7 +154,39 @@ const SubscriptionDialog = (props) => {
   const { createContract } = useContext(W3Context);
 
   const handleCreate = async () => {
-    const {account, index} = await createContract(activeItemId)
+
+    const subscriptionSnapshot = await firebase.subscription(activeItemId).get();
+    const subscription = subscriptionSnapshot.val();
+    var K = {};
+    var expire = null;
+    for (let s = 0; s < subscription.subList.length; s++) {
+      const subService = subscription.subList[s];
+      const service = await firebase.service(subService.serviceId).get();
+
+      const serviceData = service.val();
+      const hashIndexStart = Math.floor((subService.startDate - serviceData.startDate) / 1000 / 60 / 60 / 24);
+      const hashIndexEnd = Math.floor((subService.endDate - subService.startDate) / 1000 / 60 / 60 / 24);
+      const hs = serviceData.hashes.slice(hashIndexStart, hashIndexEnd + 1);
+      let ks = []
+      for (let i = 0; i < hs.length; i++) {
+        let buff = Buffer.alloc(12);
+        buff.writeIntBE((i + 1) * serviceData.unitValue, 0, 6);
+        buff.writeIntBE(serviceData.endDate, 6, 6);
+        ks.push(buff);
+      }
+      if(!expire | expire < serviceData.endDate){
+        expire = serviceData.endDate;
+      }
+      if (!K[serviceData.address]) {
+        K[serviceData.address] = [];
+      }
+      K[serviceData.address].push([hs.map(el => Buffer.from(el)), ks]);
+    }
+    const mt = new MerkleTree()
+    const [value,lock] = mt.root_slice(mt.LL(K));
+    console.log(value,expire,typeof(expire),lock);
+    const {account, index} = await createContract(lock,expire, value)
+
     firebase.subscription(activeItemId).update({
       'status': "Lock Created",
       'index': index,
@@ -166,7 +199,7 @@ const SubscriptionDialog = (props) => {
     <Dialog open={isOpen} maxWidth="lg" aria-labelledby="form-dialog-title">
       <DialogTitle id="dialog">Subscribe</DialogTitle>
       <DialogContent>
-        <SubscriptionList subList={subList?subList:[]} />
+        <SubscriptionList subList={subList ? subList : []} />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCreate} color="primary">
