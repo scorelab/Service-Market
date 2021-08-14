@@ -14,6 +14,7 @@ import AccountPage from './components/Account/account'
 import NewSubscriptionPage from './components/Subscription/new-subscription'
 import SubscriptionPage from './components/Subscription/subscriptions'
 import IntermediationPage from './components/Intermediation/intermediations'
+import IntClientPage from './components/Intermediation/clients'
 
 import "./App.css";
 import * as ROUTES from './constants/routes';
@@ -41,6 +42,7 @@ class App extends Component {
               <Route exact from={ROUTES.VIEW_SUBSCRIPTION} render={props => <SubscriptionPage {...props} />} />
               <Route exact from={ROUTES.ADD_SUBSCRIPTION} render={props => <NewSubscriptionPage {...props} />} />
               <Route exact from={ROUTES.ADD_INTERMEDIATION} render={props => <NewIntermediaryPage {...props} />} />
+              <Route exact from={ROUTES.VIEW_INT_CLIENTS} render={props => <IntClientPage {...props} />} />
               <Route exact from={ROUTES.ADD_SERVICE} render={() => <NewServicePage />} />
               <Route exact from={ROUTES.SIGN_UP} render={props => <SignUpPage {...props} />} />
               <Route exact from={ROUTES.SIGN_IN} render={props => <SignInPage {...props} />} />

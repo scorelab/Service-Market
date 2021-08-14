@@ -53,7 +53,7 @@ export default function Item(props) {
     serviceName,
     serviceDetails,
     serviceType,
-    intermediaryName,
+    intermediary,
     startDate,
     endDate,
     unitValue,
@@ -89,7 +89,7 @@ export default function Item(props) {
             End: {moment(endDate).format("DD MMMM YYYY")}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            Intermediary: {intermediaryName}
+            Intermediary: {intermediary}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
             Unit Value: {unitValue}

@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
 export default function ShowCase(props) {
     const classes = useStyles();
     const {services} = props;
-    console.log(services);
     return (
         <div className={classes.root}>
             <Grid

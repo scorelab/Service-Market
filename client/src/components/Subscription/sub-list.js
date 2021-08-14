@@ -43,8 +43,7 @@ export default function SubscriptionList(props) {
             <Table className={classes.table} aria-label="spanning table">
                 <TableHead>
                     <TableRow>
-                        <TableCell>Service Name</TableCell>
-                        <TableCell align="right">Intermediary</TableCell>
+                        <TableCell>Service</TableCell>
                         <TableCell align="right">Start Date</TableCell>
                         <TableCell align="right">End Date</TableCell>
                         <TableCell align="right">Status</TableCell>
@@ -55,8 +54,7 @@ export default function SubscriptionList(props) {
                 <TableBody>
                     {props.subList.map((row,i) => (
                         <TableRow key={i}>
-                            <TableCell>{row.serviceName}</TableCell>
-                            <TableCell align="right">{row.intermediaryName}</TableCell>
+                            <TableCell>{row.serviceId}</TableCell>
                             <TableCell align="right">{row.startDate && moment(row.startDate).format("DD MMMM YYYY")}</TableCell>
                             <TableCell align="right">{row.endDate && moment(row.endDate).format("DD MMMM YYYY")}</TableCell>
                             <TableCell align="right">{row.status}</TableCell>

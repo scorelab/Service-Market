@@ -18,9 +18,9 @@ class MerkleTree {
         }
     }
 
-    root_slice(root){
+    root_slice(root) {
         const value = parseInt(root.slice(0, 6).toString('hex'), 16);
-        const lock = '0x'+root.slice(12, 32).toString('hex');
+        const lock = '0x' + root.slice(12, 32).toString('hex');
         return [value, lock];
     }
 
@@ -99,18 +99,27 @@ class MerkleTree {
         var ks3 = []
         var xs3 = []
 
-        Object.entries(K).forEach(([a, keys3]) => {
+        K.forEach((intData) => {
+            const address = toBuffer(intData["address"]);
+            const services = intData["services"];
             var ks2 = []
             var xs2 = []
-            keys3.forEach(keys2 => {
-                const k2 = this.L(keys2[0], keys2[1], 1);
+            services.forEach(servData => {
+                const x1 = servData["data"][0].map(el => Buffer.from(el))
+                const k1 = servData["data"][1].map(el => {
+                    let buff = Buffer.alloc(12);
+                    buff.writeIntBE(el[0], 0, 6);
+                    buff.writeIntBE(el[1], 6, 6);
+                    return buff;                        
+                });
+
+                const k2 = this.L(x1, k1, 1);
                 xs2.push(k2.slice(12, 32))
                 ks2.push(k2.slice(0, 12).fill(0, 6, 12))
             });
 
             const k3 = this.L(xs2, ks2, 2);
             const h3 = k3.slice(12, 32);
-            const address = toBuffer(a);
             xs3.push(Buffer.concat([address, h3]));
             ks3.push(k3.slice(0, 12).fill(0, 6, 12));
         });
@@ -121,36 +130,36 @@ class MerkleTree {
         var proofs = {}
         var ks3 = []
         var xs3 = []
-        Object.entries(K).forEach(([a, keys2], index2) => {
+        K.forEach((intData, index2) => {
+            const address = toBuffer(intData["address"]);
+            const services = intData["services"];
             var ks2 = []
             var xs2 = []
-            keys2.forEach((keys1, index1) => {
-                const k2 = this.L(keys1[0], keys1[1], 1);
+            services.forEach((servData, index1) => {
+                const x1 = servData["data"][0].map(el => Buffer.from(el))
+                const k1 = servData["data"][1].map(el => {
+                    let buff = Buffer.alloc(12);
+                    buff.writeIntBE(el[0], 0, 6);
+                    buff.writeIntBE(el[1], 6, 6);
+                    return buff;                        
+                });
+                const k2 = this.L(x1, k1, 1);
                 if (index1 == i2 & index2 == i3) {
-                    const w1 = this.W(i1, keys1[0], keys1[1], 1);
-                    proofs[1] = w1;
-                    // this.PA('witness1', w1);
+                    proofs[1] = this.W(i1, x1, k1, 1);
                 }
                 xs2.push(k2.slice(12, 32));
                 ks2.push(k2.slice(0, 12).fill(0, 6, 12));
             });
             const k3 = this.L(xs2, ks2, 2);
             if (index2 == i3) {
-                const w2 = this.W(i2, xs2, ks2, 2);
-                proofs[2] = w2;
-                // this.PA('witness2', w2);
+                proofs[2] = this.W(i2, xs2, ks2, 2);
             }
             const h = k3.slice(12, 32);
-            const address = toBuffer(a);
             xs3.push(Buffer.concat([address, h]));
             ks3.push(k3.slice(0, 12).fill(0, 6, 12));
 
         });
-        const res = this.L(xs3, ks3, i3);
-        const w3 = this.W(i3, xs3, ks3, 3);
-        proofs[3] = w3;
-        // this.PA('witness3', w3);
-        // this.P(res);
+        proofs[3] = this.W(i3, xs3, ks3, 3);
         return proofs;
     }
 

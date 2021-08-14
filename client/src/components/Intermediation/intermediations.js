@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useContext, useEffect, useState } from 'react';
 import MainBlock from '../Common/main-block';
 import ShowCase from '../Common/grid';
 import { withFirebase } from '../Firebase';
@@ -35,10 +35,13 @@ import {
   DialogContent,
   DialogActions,
   DialogTitle,
+  TextField,
 } from '@material-ui/core';
 import LockIcon from '@material-ui/icons/Lock';
 import moment from 'moment';
 import { SERVICE_TYPES } from '../../constants/constants';
+import { W3Provider } from '../Web3';
+import W3Context from '../Web3/context';
 
 
 
@@ -46,12 +49,24 @@ class IntermediationPage extends Component {
 
   constructor(props) {
     super(props);
+    this.handleClickOpen = this.handleClickOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
     this.state = {
       loading: false,
       intermediaries: [],
+      isOpen: false,
+      activeItemId: null
     };
+
   }
 
+  handleClickOpen(item) {
+    this.setState({ isOpen: true, activeItemId: item });
+  };
+
+  handleClose() {
+    this.setState({ isOpen: false, activeItemId: null });
+  };
 
   componentDidMount() {
     if (!this.state.intermediaries.length) {
@@ -106,7 +121,7 @@ class IntermediationPage extends Component {
                     <TableCell align="right">{moment(row.createdAt).format("DD MMMM YYYY")}</TableCell>
                     <TableCell align="right">
                       <ButtonGroup variant="text" color="primary" size="large" aria-label="text primary button group">
-                        <Button><VisibilityIcon/></Button>
+                        <Button><VisibilityIcon onClick={() => this.handleClickOpen(k)} /></Button>
                         <Button><DeleteIcon /></Button>
                       </ButtonGroup>
                     </TableCell>
@@ -117,14 +132,11 @@ class IntermediationPage extends Component {
             </Table>
           </TableContainer>
         }
-
         {!intermediaries && <div>There are no itermediations ...</div>}
       </MainBlock>
     );
   }
 }
-
-
 
 const mapStateToProps = state => ({
   authUser: state.sessionState.authUser,

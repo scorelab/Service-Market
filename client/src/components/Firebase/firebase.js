@@ -110,6 +110,9 @@ class Firebase {
 
   intermediaries = () => this.db.ref('intermediaries');
 
+  // *** Client API ***
+  clients = () => this.db.ref('clients'); 
+
 }
 
 export default Firebase;

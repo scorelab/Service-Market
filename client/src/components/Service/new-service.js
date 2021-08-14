@@ -122,7 +122,6 @@ class NewServiceFormBase extends Component {
       serviceDetails: serviceDetails,
       serviceType: serviceType,
       intermediary: intermediary,
-      intermediaryName: intermediaries[intermediary].intermediaryName,
       startDate: startDate.valueOf(),
       endDate: endDate.valueOf(),
       address: address,

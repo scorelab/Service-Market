@@ -157,41 +157,87 @@ const SubscriptionDialog = (props) => {
 
     const subscriptionSnapshot = await firebase.subscription(activeItemId).get();
     const subscription = subscriptionSnapshot.val();
-    var K = {};
+    var K = [];
+    // [
+    //   {
+    //     intermediary: "int1" 
+    //     address: "add1"
+    //     services: [
+    //       {service:"ser1", data:[]},
+    //       {service:"ser2", data:[]},
+    //     ]
+    //   },
+    // ]
     var expire = null;
     for (let s = 0; s < subscription.subList.length; s++) {
       const subService = subscription.subList[s];
-      const service = await firebase.service(subService.serviceId).get();
 
+      //Prepare Hash Values 
+      const service = await firebase.service(subService.serviceId).get();
       const serviceData = service.val();
+
       const hashIndexStart = Math.floor((subService.startDate - serviceData.startDate) / 1000 / 60 / 60 / 24);
       const hashIndexEnd = Math.floor((subService.endDate - subService.startDate) / 1000 / 60 / 60 / 24);
       const hs = serviceData.hashes.slice(hashIndexStart, hashIndexEnd + 1);
       let ks = []
       for (let i = 0; i < hs.length; i++) {
-        let buff = Buffer.alloc(12);
-        buff.writeIntBE((i + 1) * serviceData.unitValue, 0, 6);
-        buff.writeIntBE(serviceData.endDate, 6, 6);
-        ks.push(buff);
+        ks.push([(i + 1)*serviceData.unitValue,serviceData.endDate]);
       }
-      if(!expire | expire < serviceData.endDate){
+
+      //Take max expiry date
+      if (!expire | expire < serviceData.endDate) {
         expire = serviceData.endDate;
       }
-      if (!K[serviceData.address]) {
-        K[serviceData.address] = [];
+
+      //Intermediary details
+      const intermediary = await firebase.intermediary(serviceData.intermediary).get();
+      const intermediaryData = intermediary.val();
+      subscription.subList[s]["intermediary"] = serviceData.intermediary;
+      subscription.subList[s]["intermediaryAddress"] = intermediaryData.address;
+ 
+      //Update the list
+      const item = {
+        service: subService.serviceId,
+        data: [hs, ks]
       }
-      K[serviceData.address].push([hs.map(el => Buffer.from(el)), ks]);
+      const addIndex = K.findIndex((obj => obj.address == intermediaryData.address));
+      if (addIndex < 0) {
+        K.push(
+          {
+            intermediary: serviceData.intermediary,
+            address: intermediaryData.address,
+            services: [item]
+          }
+        );
+      } else {
+        K[addIndex]["services"].push(item);
+      }
     }
     const mt = new MerkleTree()
-    const [value,lock] = mt.root_slice(mt.LL(K));
-    console.log(value,expire,typeof(expire),lock);
-    const {account, index} = await createContract(lock,expire, value)
+    const [value, lock] = mt.root_slice(mt.LL(K));
+    const { account, index } = await createContract(lock, expire, value)
 
     firebase.subscription(activeItemId).update({
       'status': "Lock Created",
       'index': index,
       'account': account
     });
+
+    for (let s = 0; s < subscription.subList.length; s++) {
+      const subService = subscription.subList[s];
+      const addIndex = K.findIndex((obj => obj.address == subService.intermediaryAddress));
+      const servIndex = K[addIndex]["services"].findIndex((obj => obj.service == subService.serviceId));
+      firebase.clients().push({
+        service: subService.serviceId,
+        serviceIndex: servIndex,
+        intermediation: subService.intermediary,
+        intermediaryIndex: addIndex,
+        contractIndex: index,
+        contractOwner: account,
+        tree: K //todo remove redundant ==> change WW
+      });
+    }
+
     handleClose();
   };
 
