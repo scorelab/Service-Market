@@ -189,9 +189,6 @@ class NewSubscriptionFormBase extends Component {
   }
 
   updateItem = (item) => {
-    item.serviceName = this.state.services[item.serviceId].serviceName;
-    item.intermediary = this.state.services[item.serviceId].intermediary;
-    item.intermediaryName = this.state.services[item.serviceId].intermediaryName;
     item.status = "Pending";
     item.value = this.state.services[item.serviceId].unitValue * moment.duration(item.endDate.diff(item.startDate)).asDays().toFixed(0);
     this.setState({

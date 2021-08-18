@@ -41,6 +41,7 @@ import moment from 'moment';
 import SubscriptionList from './sub-list';
 import { W3Provider } from '../Web3';
 import W3Context from '../Web3/context';
+import { MerkleTree } from '../../util/MerkelUtil';
 
 
 
@@ -140,8 +141,8 @@ class SubscriptionPage extends Component {
             isOpen={this.state.isOpen}
             subList={this.state.subList}
             handleClose={this.handleClose}
-            activeItemId={this.state.activeItemId} 
-            firebase={this.props.firebase}/>
+            activeItemId={this.state.activeItemId}
+            firebase={this.props.firebase} />
         </W3Provider>
       </MainBlock>
     );
@@ -153,12 +154,90 @@ const SubscriptionDialog = (props) => {
   const { createContract } = useContext(W3Context);
 
   const handleCreate = async () => {
-    const {account, index} = await createContract(activeItemId)
+
+    const subscriptionSnapshot = await firebase.subscription(activeItemId).get();
+    const subscription = subscriptionSnapshot.val();
+    var K = [];
+    // [
+    //   {
+    //     intermediary: "int1" 
+    //     address: "add1"
+    //     services: [
+    //       {service:"ser1", data:[]},
+    //       {service:"ser2", data:[]},
+    //     ]
+    //   },
+    // ]
+    var expire = null;
+    for (let s = 0; s < subscription.subList.length; s++) {
+      const subService = subscription.subList[s];
+
+      //Prepare Hash Values 
+      const service = await firebase.service(subService.serviceId).get();
+      const serviceData = service.val();
+
+      const hashIndexStart = Math.floor((subService.startDate - serviceData.startDate) / 1000 / 60 / 60 / 24);
+      const hashIndexEnd = Math.floor((subService.endDate - subService.startDate) / 1000 / 60 / 60 / 24);
+      const hs = serviceData.hashes.slice(hashIndexStart, hashIndexEnd + 1);
+      let ks = []
+      for (let i = 0; i < hs.length; i++) {
+        ks.push([(i + 1)*serviceData.unitValue,serviceData.endDate]);
+      }
+
+      //Take max expiry date
+      if (!expire | expire < serviceData.endDate) {
+        expire = serviceData.endDate;
+      }
+
+      //Intermediary details
+      const intermediary = await firebase.intermediary(serviceData.intermediary).get();
+      const intermediaryData = intermediary.val();
+      subscription.subList[s]["intermediary"] = serviceData.intermediary;
+      subscription.subList[s]["intermediaryAddress"] = intermediaryData.address;
+ 
+      //Update the list
+      const item = {
+        service: subService.serviceId,
+        data: [hs, ks]
+      }
+      const addIndex = K.findIndex((obj => obj.address == intermediaryData.address));
+      if (addIndex < 0) {
+        K.push(
+          {
+            intermediary: serviceData.intermediary,
+            address: intermediaryData.address,
+            services: [item]
+          }
+        );
+      } else {
+        K[addIndex]["services"].push(item);
+      }
+    }
+    const mt = new MerkleTree()
+    const [value, lock] = mt.root_slice(mt.LL(K));
+    const { account, index } = await createContract(lock, expire, value)
+
     firebase.subscription(activeItemId).update({
       'status': "Lock Created",
       'index': index,
       'account': account
     });
+
+    for (let s = 0; s < subscription.subList.length; s++) {
+      const subService = subscription.subList[s];
+      const addIndex = K.findIndex((obj => obj.address == subService.intermediaryAddress));
+      const servIndex = K[addIndex]["services"].findIndex((obj => obj.service == subService.serviceId));
+      firebase.clients().push({
+        service: subService.serviceId,
+        serviceIndex: servIndex,
+        intermediation: subService.intermediary,
+        intermediaryIndex: addIndex,
+        contractIndex: index,
+        contractOwner: account,
+        tree: K //todo remove redundant ==> change WW
+      });
+    }
+
     handleClose();
   };
 
@@ -166,7 +245,7 @@ const SubscriptionDialog = (props) => {
     <Dialog open={isOpen} maxWidth="lg" aria-labelledby="form-dialog-title">
       <DialogTitle id="dialog">Subscribe</DialogTitle>
       <DialogContent>
-        <SubscriptionList subList={subList?subList:[]} />
+        <SubscriptionList subList={subList ? subList : []} />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCreate} color="primary">

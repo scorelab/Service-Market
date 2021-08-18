@@ -80,16 +80,17 @@ function SideMenu() {
         </W3Provider>
         <List>
           <ExpandableMenuItem title="Service" icon={<RoomServiceIcon />}>
-            <MenuItem title="New Service" icon={<CreateOutlined />} to={ROUTES.ADD_SERVICE} />
-            <MenuItem title="My Services" icon={< ViewArray />} to={ROUTES.VIEW_SERVICE} />
+            <MenuItem title="New" icon={<CreateOutlined />} to={ROUTES.ADD_SERVICE} />
+            <MenuItem title="Services" icon={< ViewArray />} to={ROUTES.VIEW_SERVICE} />
           </ExpandableMenuItem>
           <ExpandableMenuItem title="Intermediation" icon={<StreetviewIcon />}>
-            <MenuItem title="New Intermediation" icon={<CreateOutlined />} to={ROUTES.ADD_INTERMEDIATION} />
-            <MenuItem title="My Intermediations" icon={<ViewArray />} to={ROUTES.VIEW_INTERMEDIATION} />
+            <MenuItem title="New" icon={<CreateOutlined />} to={ROUTES.ADD_INTERMEDIATION} />
+            <MenuItem title="Intermediations" icon={<ViewArray />} to={ROUTES.VIEW_INTERMEDIATION} />
+            <MenuItem title="Clients" icon={<ViewArray />} to={ROUTES.VIEW_INT_CLIENTS} />
           </ExpandableMenuItem>
           <ExpandableMenuItem title="Subscription" icon={<TouchAppIcon />}>
-            <MenuItem title="New Subscription" icon={<CreateOutlined />} to={ROUTES.ADD_SUBSCRIPTION} />
-            <MenuItem title="My Subscriptions" icon={<ViewArray />} to={ROUTES.VIEW_SUBSCRIPTION} />
+            <MenuItem title="New" icon={<CreateOutlined />} to={ROUTES.ADD_SUBSCRIPTION} />
+            <MenuItem title="Subscriptions" icon={<ViewArray />} to={ROUTES.VIEW_SUBSCRIPTION} />
           </ExpandableMenuItem>
         </List>
       </div>
