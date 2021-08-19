@@ -71,8 +71,8 @@ class SubscriptionPage extends Component {
   onListenForSubscriptions = () => {
     this.props.firebase
       .subscriptions()
-      .orderByChild('createdAt')
-      .limitToLast(5)
+      .orderByChild('consumer')
+      .equalTo(this.props.authUser.uid)
       .on('value', snapshot => {
         this.setState({ loading: false, subscriptions: snapshot.val() });
       });
