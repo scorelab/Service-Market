@@ -22,6 +22,7 @@ import RoomServiceIcon from '@material-ui/icons/RoomService';
 import W3Context from '../Web3/context';
 import { W3Provider } from '../Web3';
 import SyncIcon from '@material-ui/icons/Sync';
+import { useSelector } from 'react-redux';
 
 const drawerWidth = 240;
 
@@ -58,6 +59,7 @@ const useStyles = makeStyles(theme => ({
 
 function SideMenu() {
   const classes = useStyles();
+  const authUser = useSelector(state => state.sessionState.authUser);
 
   return (
     <Drawer
@@ -78,21 +80,23 @@ function SideMenu() {
         <W3Provider>
           <Wallet />
         </W3Provider>
-        <List>
-          <ExpandableMenuItem title="Service" icon={<RoomServiceIcon />}>
-            <MenuItem title="New" icon={<CreateOutlined />} to={ROUTES.ADD_SERVICE} />
-            <MenuItem title="Services" icon={< ViewArray />} to={ROUTES.VIEW_SERVICE} />
-          </ExpandableMenuItem>
-          <ExpandableMenuItem title="Intermediation" icon={<StreetviewIcon />}>
-            <MenuItem title="New" icon={<CreateOutlined />} to={ROUTES.ADD_INTERMEDIATION} />
-            <MenuItem title="Intermediations" icon={<ViewArray />} to={ROUTES.VIEW_INTERMEDIATION} />
-            <MenuItem title="Clients" icon={<ViewArray />} to={ROUTES.VIEW_INT_CLIENTS} />
-          </ExpandableMenuItem>
-          <ExpandableMenuItem title="Subscription" icon={<TouchAppIcon />}>
-            <MenuItem title="New" icon={<CreateOutlined />} to={ROUTES.ADD_SUBSCRIPTION} />
-            <MenuItem title="Subscriptions" icon={<ViewArray />} to={ROUTES.VIEW_SUBSCRIPTION} />
-          </ExpandableMenuItem>
-        </List>
+        {authUser &&
+          <List>
+            <ExpandableMenuItem title="Service" icon={<RoomServiceIcon />}>
+              <MenuItem title="New" icon={<CreateOutlined />} to={ROUTES.ADD_SERVICE} />
+              <MenuItem title="Services" icon={< ViewArray />} to={ROUTES.VIEW_SERVICE} />
+            </ExpandableMenuItem>
+            <ExpandableMenuItem title="Intermediation" icon={<StreetviewIcon />}>
+              <MenuItem title="New" icon={<CreateOutlined />} to={ROUTES.ADD_INTERMEDIATION} />
+              <MenuItem title="Intermediations" icon={<ViewArray />} to={ROUTES.VIEW_INTERMEDIATION} />
+              <MenuItem title="Clients" icon={<ViewArray />} to={ROUTES.VIEW_INT_CLIENTS} />
+            </ExpandableMenuItem>
+            <ExpandableMenuItem title="Subscription" icon={<TouchAppIcon />}>
+              <MenuItem title="New" icon={<CreateOutlined />} to={ROUTES.ADD_SUBSCRIPTION} />
+              <MenuItem title="Subscriptions" icon={<ViewArray />} to={ROUTES.VIEW_SUBSCRIPTION} />
+            </ExpandableMenuItem>
+          </List>
+        }
       </div>
     </Drawer>
 
