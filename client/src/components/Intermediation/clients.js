@@ -151,8 +151,8 @@ const ClaimDialog = (props) => {
       serviceIndex,
       tree
     } = activeItem
-    const value = tree[intermediaryIndex]["services"][serviceIndex]["data"][1][0]
-    const expire = tree[intermediaryIndex]["services"][serviceIndex]["data"][1][0]
+    const value = tree[intermediaryIndex]["services"][serviceIndex]["data"][1][0][0]
+    const expire = tree[intermediaryIndex]["services"][serviceIndex]["data"][1][0][1]
 
     const mt = new MerkleTree();
 
@@ -195,7 +195,6 @@ const ClaimDialog = (props) => {
           label="Secret"
           defaultValue={claimSecret}
           onChange={onChangeSecret}
-          type="password"
           variant="outlined"
         />
       </DialogContent>

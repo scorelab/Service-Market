@@ -105,7 +105,7 @@ class MerkleTree {
             var ks2 = []
             var xs2 = []
             services.forEach(servData => {
-                const x1 = servData["data"][0].map(el => Buffer.from(el))
+                const x1 = servData["data"][0].map(el => toBuffer(el))
                 const k1 = servData["data"][1].map(el => {
                     let buff = Buffer.alloc(12);
                     buff.writeIntBE(el[0], 0, 6);
@@ -120,7 +120,7 @@ class MerkleTree {
 
             const k3 = this.L(xs2, ks2, 2);
             const h3 = k3.slice(12, 32);
-            xs3.push(Buffer.concat([address, h3]));
+            xs3.push(this.H(Buffer.concat([address, h3])));
             ks3.push(k3.slice(0, 12).fill(0, 6, 12));
         });
         return this.L(xs3, ks3, 3);
@@ -136,7 +136,7 @@ class MerkleTree {
             var ks2 = []
             var xs2 = []
             services.forEach((servData, index1) => {
-                const x1 = servData["data"][0].map(el => Buffer.from(el))
+                const x1 = servData["data"][0].map(el => toBuffer(el))
                 const k1 = servData["data"][1].map(el => {
                     let buff = Buffer.alloc(12);
                     buff.writeIntBE(el[0], 0, 6);
@@ -155,7 +155,7 @@ class MerkleTree {
                 proofs[2] = this.W(i2, xs2, ks2, 2);
             }
             const h = k3.slice(12, 32);
-            xs3.push(Buffer.concat([address, h]));
+            xs3.push(this.H(Buffer.concat([address, h])));
             ks3.push(k3.slice(0, 12).fill(0, 6, 12));
 
         });
