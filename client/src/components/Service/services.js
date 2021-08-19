@@ -11,10 +11,9 @@ class ServicePage extends Component {
     super(props);
     this.state = {
       loading: false,
-      services:[],
+      services: [],
     };
   }
-
 
   componentDidMount() {
     if (!this.state.services.length) {
@@ -24,13 +23,17 @@ class ServicePage extends Component {
   }
 
   onListenForServices = () => {
-    this.props.firebase
-      .services()
-      .orderByChild('createdAt')
-      .limitToLast(5)
-      .on('value', snapshot => {
-        this.setState({ loading: false, services:snapshot.val() });
-      });
+    if (this.props.authUser) {
+      this.props.firebase
+        .services()
+        .orderByChild("producer")
+        .equalTo(this.props.authUser.uid)
+        .on('value', snapshot => {
+          this.setState({ loading: false, services: snapshot.val() });
+        });
+    }else{
+      this.setState({ loading: false,services:[]});
+    }
   };
 
   componentWillUnmount() {
@@ -39,7 +42,7 @@ class ServicePage extends Component {
 
 
   render() {
-    const { services,loading } = this.state;
+    const { services, loading } = this.state;
 
     return (
       <MainBlock title="My Services">
