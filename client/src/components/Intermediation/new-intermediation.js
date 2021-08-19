@@ -87,7 +87,7 @@ class NewIntermediaryFormBase extends Component {
     } = this.state;
 
     this.props.firebase.intermediaries().push({
-      producer: authUser.uid,
+      mediator: authUser.uid,
       intermediaryName: intermediaryName,
       intermediaryDetails: intermediaryDetails,
       intermediaryType: intermediaryType,
