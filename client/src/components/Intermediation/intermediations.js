@@ -76,13 +76,17 @@ class IntermediationPage extends Component {
   }
 
   onListenForIntermediations = () => {
-    this.props.firebase
-      .intermediaries()
-      .orderByChild('createdAt')
-      .limitToLast(5)
-      .on('value', snapshot => {
-        this.setState({ loading: false, intermediaries: snapshot.val() });
-      });
+    if (this.props.authUser) {
+      this.props.firebase
+        .intermediaries()
+        .orderByChild('mediator')
+        .equalTo(this.props.authUser.uid)
+        .on('value', snapshot => {
+          this.setState({ loading: false, intermediaries: snapshot.val() });
+        });
+    }else{
+      this.setState({ loading: false, intermediaries: [] });
+    }
   };
 
   componentWillUnmount() {
