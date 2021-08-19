@@ -79,6 +79,8 @@ class IntClientPage extends Component {
   onListenForClients = () => {
     this.props.firebase
       .clients()
+      .orderByChild('intermediation')
+      .equalTo(this.props.authUser.uid)
       .on('value', snapshot => {
         const clients = snapshot.val()
         this.setState({ loading: false, clients: snapshot.val() });

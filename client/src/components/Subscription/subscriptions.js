@@ -181,7 +181,7 @@ const SubscriptionDialog = (props) => {
       const hs = serviceData.hashes.slice(hashIndexStart, hashIndexEnd + 1);
       let ks = []
       for (let i = 0; i < hs.length; i++) {
-        ks.push([(i + 1)*serviceData.unitValue,serviceData.endDate]);
+        ks.push([(i + 1) * serviceData.unitValue, serviceData.endDate]);
       }
 
       //Take max expiry date
@@ -192,9 +192,9 @@ const SubscriptionDialog = (props) => {
       //Intermediary details
       const intermediary = await firebase.intermediary(serviceData.intermediary).get();
       const intermediaryData = intermediary.val();
-      subscription.subList[s]["intermediary"] = serviceData.intermediary;
+      subscription.subList[s]["intermediary"] = intermediaryData.mediator;
       subscription.subList[s]["intermediaryAddress"] = intermediaryData.address;
- 
+
       //Update the list
       const item = {
         service: subService.serviceId,
