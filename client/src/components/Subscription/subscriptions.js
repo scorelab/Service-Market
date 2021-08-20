@@ -56,7 +56,9 @@ class SubscriptionPage extends Component {
       loading: false,
       subscriptions: [],
       subList: [],
-      isOpen: false
+      isOpen: false,
+      activeItemStatus: "",
+      serviceAddress: "",
     };
   }
 
@@ -82,8 +84,8 @@ class SubscriptionPage extends Component {
     this.props.firebase.subscriptions().off();
   }
 
-  handleClickOpen(list, item) {
-    this.setState({ isOpen: true, subList: list, activeItemId: item });
+  handleClickOpen(list, item, status, address) {
+    this.setState({ isOpen: true, subList: list, activeItemId: item, activeItemStatus: status, serviceAddress: address });
   };
 
   handleClose() {
@@ -122,7 +124,7 @@ class SubscriptionPage extends Component {
                     <TableCell align="right">{row.status}</TableCell>
                     <TableCell align="right">
                       <ButtonGroup variant="text" color="primary" size="large" aria-label="text primary button group">
-                        <Button><VisibilityIcon onClick={() => this.handleClickOpen(row.subList, k)} /></Button>
+                        <Button><VisibilityIcon onClick={() => this.handleClickOpen(row.subList, k, row.status, row.account)} /></Button>
                         <Button><LockIcon /></Button>
                       </ButtonGroup>
                     </TableCell>
@@ -142,6 +144,8 @@ class SubscriptionPage extends Component {
             subList={this.state.subList}
             handleClose={this.handleClose}
             activeItemId={this.state.activeItemId}
+            status={this.state.activeItemStatus}
+            serviceAddress={this.state.serviceAddress}
             firebase={this.props.firebase} />
         </W3Provider>
       </MainBlock>
@@ -150,8 +154,8 @@ class SubscriptionPage extends Component {
 }
 
 const SubscriptionDialog = (props) => {
-  const { isOpen, subList, handleClose, activeItemId, firebase } = props
-  const { createContract } = useContext(W3Context);
+  const { isOpen, subList, handleClose, activeItemId, firebase, status, serviceAddress } = props
+  const { web3, createContract } = useContext(W3Context);
 
   const handleCreate = async () => {
 
@@ -175,6 +179,8 @@ const SubscriptionDialog = (props) => {
       //Prepare Hash Values 
       const service = await firebase.service(subService.serviceId).get();
       const serviceData = service.val();
+      subscription.subList[s]["producer"] = serviceData.producer;
+
 
       const hashIndexStart = Math.floor((subService.startDate - serviceData.startDate) / 1000 / 60 / 60 / 24);
       const hashIndexEnd = Math.floor((subService.endDate - subService.startDate) / 1000 / 60 / 60 / 24);
@@ -193,6 +199,7 @@ const SubscriptionDialog = (props) => {
       const intermediary = await firebase.intermediary(serviceData.intermediary).get();
       const intermediaryData = intermediary.val();
       subscription.subList[s]["intermediary"] = intermediaryData.mediator;
+      subscription.subList[s]["intermediaryId"] = serviceData.intermediary;
       subscription.subList[s]["intermediaryAddress"] = intermediaryData.address;
 
       //Update the list
@@ -215,11 +222,10 @@ const SubscriptionDialog = (props) => {
     }
     const mt = new MerkleTree()
     const [value, lock] = mt.root_slice(mt.LL(K));
-    const { account, index } = await createContract(lock, expire, value)
+    const account = await createContract(lock, expire, value)
 
     firebase.subscription(activeItemId).update({
       'status': "Lock Created",
-      'index': index,
       'account': account
     });
 
@@ -228,11 +234,13 @@ const SubscriptionDialog = (props) => {
       const addIndex = K.findIndex((obj => obj.address == subService.intermediaryAddress));
       const servIndex = K[addIndex]["services"].findIndex((obj => obj.service == subService.serviceId));
       firebase.clients().push({
-        service: subService.serviceId,
+        service: subService.producer,
+        serviceId: subService.serviceId,
         serviceIndex: servIndex,
         intermediation: subService.intermediary,
+        intermediationAddress: subService.intermediaryAddress,
+        intermediationId: subService.intermediaryId,
         intermediaryIndex: addIndex,
-        contractIndex: index,
         contractOwner: account,
         tree: K //todo remove redundant ==> change WW
       });
@@ -245,7 +253,12 @@ const SubscriptionDialog = (props) => {
     <Dialog open={isOpen} maxWidth="lg" aria-labelledby="form-dialog-title">
       <DialogTitle id="dialog">Subscribe</DialogTitle>
       <DialogContent>
-        <SubscriptionList subList={subList ? subList : []} />
+        <SubscriptionList
+          serviceAddress={serviceAddress}
+          subList={subList ? subList : []}
+          web3={web3}
+          isLockCreated={status == "Lock Created"}
+          firebase={firebase} />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCreate} color="primary">
@@ -258,7 +271,6 @@ const SubscriptionDialog = (props) => {
     </Dialog>
   );
 };
-
 
 const mapStateToProps = state => ({
   authUser: state.sessionState.authUser,

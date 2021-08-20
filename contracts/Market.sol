@@ -26,6 +26,8 @@ contract Market {
 
     function newContract(bytes20 lock, uint256 expire ) public payable {
         require(msg.value > 0);
+        require(contracts[msg.sender].amount == 0); //check already exsist
+
         contracts[msg.sender] = Contract(
             {
                 amount: msg.value,
@@ -90,12 +92,12 @@ contract Market {
     }
 
     function refund() public payable {
-        address payable owner = msg.sender;
-        Contract memory c = contracts[owner];
+        Contract memory c = contracts[msg.sender];
         if(c.expire < block.timestamp){
-            delete contracts[owner];
+            delete contracts[msg.sender];
             // delete claims[owner];
-            owner.transfer(c.amount - c.claimed_value);
+            address payable owner = msg.sender; 
+            owner.transfer(c.amount - c.claimed_value);  
         }
     }
     
@@ -103,12 +105,11 @@ contract Market {
         address signer,
         address sender,
         bytes20 value,
-        bytes20 expire,
         uint8 v,
         bytes32 r,
         bytes32 s
     ) internal pure returns(bool) {
-        return ecrecover( ripemd160(abi.encodePacked(sender, value, expire)), v, r, s) == signer;
+        return ecrecover( ripemd160(abi.encodePacked(value, sender)), v, r, s) == signer;
     }
     
     
@@ -147,7 +148,7 @@ contract Market {
         require(!claims[owner][i1][i2]);
 
         //signature verification
-        require(is_valid_signature(owner, msg.sender, v1, e1, v, r, s));
+        require(is_valid_signature(owner, msg.sender, v1, v, r, s));
 
         bytes32 l;
         {
@@ -181,9 +182,8 @@ contract Market {
         if(c.lock == _x(l)){
             claims[owner][i1][i2] = true; // add to claimed list
             c.claimed_value = c.claimed_value + uint48(v1); 
-            address payable sender = msg.sender;
+            address payable sender = msg.sender; 
             sender.transfer(uint48(v1)); // transfer money
         }
-
     }
 }

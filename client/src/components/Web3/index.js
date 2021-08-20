@@ -63,19 +63,24 @@ export const W3Provider = ({ children }) => {
         value: w3State.web3.utils.toWei(value.toString(), "Gwei")
       }
     );
-    const index = result.events.NewContract.returnValues.index;
-    return { account, index };
+    return account;
   }
 
-  const claimContract = async (owner, index, witness, secret, value, expire, i1, i2, i3) => {
+  const claimContract = async (owner, witness, secret, value, expire, i1, i2, i3, sig) => {
     const account = w3State.account;
     const w1 = witness[1]?witness[1].map(el => '0x'+el.toString('hex')):[];
     const w2 = witness[2]?witness[2].map(el => '0x'+el.toString('hex')):[];
     const w3 = witness[3]?witness[3].map(el => '0x'+el.toString('hex')):[];
-    const v1 = w3State.web3.utils.padLeft(w3State.web3.utils.toHex(value), 12).toString()
-    const e1 = w3State.web3.utils.padLeft(w3State.web3.utils.toHex(expire), 12).toString()
+    const v1 = w3State.web3.utils.padLeft(w3State.web3.utils.toHex(value), 12).toString();
+    const e1 = w3State.web3.utils.padLeft(w3State.web3.utils.toHex(expire), 12).toString();
+
+    const signature = sig.split('x')[1];
+    var r = Buffer.alloc(signature.substring(0, 64), 'hex')
+    var s = Buffer.alloc(signature.substring(64, 128), 'hex')
+    var v = Buffer.alloc((parseInt(signature.substring(128, 130)) + 27).toString());
+
     await w3State.contract.methods.claim(
-      owner, index, w1, w2, w3, secret, v1,e1, i1, i2, i3
+      owner, (w1, w2, w3), secret, v1,e1, i1, i2, i3, v, s, r
     ).send(
       { from: account, gas:4612387}
     ).then((result)=>{
@@ -88,7 +93,7 @@ export const W3Provider = ({ children }) => {
 
   useEffect(() => {
     init()
-  }, [])
+  }, [w3State.web3])
 
   return (
     <W3Context.Provider value={{ ...w3State, refresh: refresh, createContract: createContract, claimContract:claimContract }}>
