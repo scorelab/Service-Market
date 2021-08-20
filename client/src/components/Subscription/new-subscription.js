@@ -251,7 +251,7 @@ class NewSubscriptionFormBase extends Component {
           <SubscriptionItem updateItem={this.updateItem} services={services} />
           <Grid container spacing={4} justify="flex-end">
             <Grid item xs>
-              <SubscriptionList subList={subList} />
+              <SubscriptionList isLockCreated={false} subList={subList} />
             </Grid>
           </Grid>
           <Grid container spacing={4} justify="flex-end">
