@@ -85,6 +85,7 @@ function SideMenu() {
             <ExpandableMenuItem title="Service" icon={<RoomServiceIcon />}>
               <MenuItem title="New" icon={<CreateOutlined />} to={ROUTES.ADD_SERVICE} />
               <MenuItem title="Services" icon={< ViewArray />} to={ROUTES.VIEW_SERVICE} />
+              <MenuItem title="Clients" icon={<ViewArray />} to={ROUTES.VIEW_SERVICE_CLIENTS} />
             </ExpandableMenuItem>
             <ExpandableMenuItem title="Intermediation" icon={<StreetviewIcon />}>
               <MenuItem title="New" icon={<CreateOutlined />} to={ROUTES.ADD_INTERMEDIATION} />

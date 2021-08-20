@@ -15,6 +15,7 @@ import NewSubscriptionPage from './components/Subscription/new-subscription'
 import SubscriptionPage from './components/Subscription/subscriptions'
 import IntermediationPage from './components/Intermediation/intermediations'
 import IntClientPage from './components/Intermediation/clients'
+import ServiceClientPage from './components/Service/clients'
 import AllItemPage from './components/All/all_items'
 import "./App.css";
 import * as ROUTES from './constants/routes';
@@ -27,7 +28,7 @@ import { W3Provider } from "./components/Web3";
 class App extends Component {
 
   render() {
-    
+
     return (
       <div className="App">
         <ThemeProvider theme={theme}>
@@ -43,6 +44,7 @@ class App extends Component {
               <Route exact from={ROUTES.ADD_SUBSCRIPTION} render={props => <NewSubscriptionPage {...props} />} />
               <Route exact from={ROUTES.ADD_INTERMEDIATION} render={props => <NewIntermediaryPage {...props} />} />
               <Route exact from={ROUTES.VIEW_INT_CLIENTS} render={props => <IntClientPage {...props} />} />
+              <Route exact from={ROUTES.VIEW_SERVICE_CLIENTS} render={props => <ServiceClientPage {...props} />} />
               <Route exact from={ROUTES.ADD_SERVICE} render={() => <NewServicePage />} />
               <Route exact from={ROUTES.SIGN_UP} render={props => <SignUpPage {...props} />} />
               <Route exact from={ROUTES.SIGN_IN} render={props => <SignInPage {...props} />} />
