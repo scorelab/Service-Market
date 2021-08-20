@@ -144,6 +144,7 @@ const ClaimDialog = (props) => {
 
   const [claimIndex, setClaimIndex] = useState("");
   const [claimSecret, setClaimSecret] = useState("");
+  const [claimSig, setClaimSig] = useState("");
 
   const handleClaim = async () => {
     const {
@@ -168,7 +169,8 @@ const ClaimDialog = (props) => {
       expire,
       claimIndex,
       serviceIndex,
-      intermediaryIndex
+      intermediaryIndex,
+      claimSig
     );
   };
 
@@ -178,6 +180,10 @@ const ClaimDialog = (props) => {
 
   const onChangeIndex = event => {
     setClaimIndex(event.target.value);
+  };
+
+  const onChangeSig = event => {
+    setClaimSig(event.target.value);
   };
 
   return (
@@ -197,6 +203,13 @@ const ClaimDialog = (props) => {
           label="Secret"
           defaultValue={claimSecret}
           onChange={onChangeSecret}
+          variant="outlined"
+        />
+        <TextField
+          id="claimSig"
+          label="Signature"
+          defaultValue={claimSig}
+          onChange={onChangeSig}
           variant="outlined"
         />
       </DialogContent>
