@@ -218,7 +218,7 @@ class NewSubscriptionFormBase extends Component {
           to: e.intermediary,
           type: "Subscription Request",
           subject: e.serviceName,
-          subjectId: [res.key,e.serviceId],
+          subjectId: [res.key, e.serviceId],
 
         });
       });
@@ -260,7 +260,9 @@ class NewSubscriptionFormBase extends Component {
             </Grid>
           </Grid>
           <Grid container spacing={4}>
-            {error && <p>{error.message}</p>}
+            <Grid item xs={12}>
+              {error && error.message}
+            </Grid>
           </Grid>
         </form >
       </div>

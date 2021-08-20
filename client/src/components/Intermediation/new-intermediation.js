@@ -45,7 +45,7 @@ const INITIAL_STATE = {
   intermediaryType: '',
   focusedInput: null,
   brokerFee: '',
-  address:'',
+  address: '',
   error: null,
 };
 
@@ -220,7 +220,9 @@ class NewIntermediaryFormBase extends Component {
             </Grid>
           </Grid>
           <Grid container spacing={4}>
-            {error && <p>{error.message}</p>}
+            <Grid item xs={12}>
+              {error && error.message}
+            </Grid>
           </Grid>
         </form >
       </div>

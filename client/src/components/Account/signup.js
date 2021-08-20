@@ -5,15 +5,34 @@ import * as ROUTES from '../../constants/routes';
 import * as ROLES from '../../constants/roles';
 import * as ERRORS from '../../constants/errors';
 import MainBlock from '../Common/main-block';
-
+import { Button, Grid, makeStyles, TextField, Typography, withStyles } from '@material-ui/core';
+import { compose } from 'recompose';
 
 function SignUpPage(props) {
   return (
-    <MainBlock>
+    <MainBlock title="Sign Up">
       <SignUpForm />
     </MainBlock>
   )
 };
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+  datepicker: {
+    padding: 0.5,
+    border: 1,
+    borderColor: "silver",
+    borderRadius: "3px",
+
+  },
+}));
 
 const INITIAL_STATE = {
   username: '',
@@ -91,63 +110,82 @@ class SignUpFormBase extends Component {
       email === '' ||
       username === '';
 
-    return (
-      <form onSubmit={this.onSubmit}>
-        <input
-          name="username"
-          value={username}
-          onChange={this.onChange}
-          type="text"
-          placeholder="Full Name"
-        />
-        <input
-          name="email"
-          value={email}
-          onChange={this.onChange}
-          type="text"
-          placeholder="Email Address"
-        />
-        <input
-          name="passwordOne"
-          value={passwordOne}
-          onChange={this.onChange}
-          type="password"
-          placeholder="Password"
-        />
-        <input
-          name="passwordTwo"
-          value={passwordTwo}
-          onChange={this.onChange}
-          type="password"
-          placeholder="Confirm Password"
-        />
-        <label>
-          Admin:
-          <input
-            name="isAdmin"
-            type="checkbox"
-            checked={isAdmin}
-            onChange={this.onChangeCheckbox}
-          />
-        </label>
-        <button disabled={isInvalid} type="submit">
-          Sign Up
-        </button>
+    const { classes } = this.props;
 
-        {error && <p>{error.message}</p>}
-      </form>
+    return (
+      <div className={classes.root}>
+        <form onSubmit={this.onSubmit}>
+          <Grid container spacing={4}>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                name="username"
+                value={username}
+                onChange={this.onChange}
+                type="text"
+                placeholder="Full Name"
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                name="email"
+                value={email}
+                onChange={this.onChange}
+                type="text"
+                placeholder="Email Address"
+                type="email"
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
+          <Grid container spacing={4}>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                name="passwordOne"
+                value={passwordOne}
+                onChange={this.onChange}
+                type="password"
+                placeholder="Password"
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                name="passwordTwo"
+                value={passwordTwo}
+                onChange={this.onChange}
+                type="password"
+                placeholder="Confirm Password"
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
+          <Grid container spacing={4} justify="flex-end">
+            <Grid item xs={2}>
+              <Button fullWidth type="submit" disabled={isInvalid} variant="contained" color="primary" >Sign Up</Button>
+            </Grid>
+          </Grid>
+          <Grid container spacing={4}>
+            <Grid item xs={12}>
+              {error && error.message}
+            </Grid>
+          </Grid>
+        </form>
+      </div>
     );
   }
 }
 
-const SignUpLink = () => (
-  <p>
-    Don't have an account? <Link to={ROUTES.SIGN_UP}>Sign Up</Link>
-  </p>
-);
-
-const SignUpForm = withRouter(withFirebase(SignUpFormBase));
+const SignUpForm = compose(
+  withRouter,
+  withFirebase,
+  withStyles(useStyles),
+)(SignUpFormBase);
 
 export default SignUpPage;
 
-export { SignUpForm, SignUpLink };
+export { SignUpForm };

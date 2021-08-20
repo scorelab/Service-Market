@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-
 import { withFirebase } from '../Firebase';
+import { Button, Grid, makeStyles, TextField, Typography, withStyles } from '@material-ui/core';
 
 const INITIAL_STATE = {
   passwordOne: '',
@@ -42,25 +42,40 @@ class PasswordChangeForm extends Component {
 
     return (
       <form onSubmit={this.onSubmit}>
-        <input
-          name="passwordOne"
-          value={passwordOne}
-          onChange={this.onChange}
-          type="password"
-          placeholder="New Password"
-        />
-        <input
-          name="passwordTwo"
-          value={passwordTwo}
-          onChange={this.onChange}
-          type="password"
-          placeholder="Confirm New Password"
-        />
-        <button disabled={isInvalid} type="submit">
-          Reset My Password
-        </button>
-
-        {error && <p>{error.message}</p>}
+        <Grid container spacing={4}>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              name="passwordOne"
+              value={passwordOne}
+              onChange={this.onChange}
+              type="password"
+              placeholder="Password"
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              name="passwordTwo"
+              value={passwordTwo}
+              onChange={this.onChange}
+              type="password"
+              placeholder="Confirm Password"
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+        <Grid container spacing={4}>
+          <Grid item xs={2}>
+            <Button fullWidth type="submit" disabled={isInvalid} variant="contained" color="primary" >Change Password</Button>
+          </Grid>
+        </Grid>
+        <Grid container spacing={4}>
+            <Grid item xs={12}>
+              {error && error.message}
+            </Grid>
+          </Grid>
       </form>
     );
   }

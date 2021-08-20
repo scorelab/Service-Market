@@ -1,19 +1,15 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 
-import { SignUpLink } from './signup';
-import { PasswordForgetLink } from './pw-forgot';
 import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
 import MainBlock from '../Common/main-block';
+import { Button, Grid, makeStyles, TextField, Typography, withStyles } from '@material-ui/core';
 
 const SignInPage = () => (
   <MainBlock>
     <SignInForm />
-    <SignInGoogle />
-    <PasswordForgetLink />
-    <SignUpLink />
   </MainBlock>
 );
 
@@ -33,10 +29,17 @@ const ERROR_MSG_ACCOUNT_EXISTS = `
   your personal account page.
 `;
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+    textAlign: 'center',
+    color: theme.palette.text.secondary
+  },
+}));
+
 class SignInFormBase extends Component {
   constructor(props) {
     super(props);
-
     this.state = { ...INITIAL_STATE };
   }
 
@@ -62,77 +65,61 @@ class SignInFormBase extends Component {
 
   render() {
     const { email, password, error } = this.state;
-
     const isInvalid = password === '' || email === '';
-
+    const { classes } = this.props;
     return (
-      <form onSubmit={this.onSubmit}>
-        <input
-          name="email"
-          value={email}
-          onChange={this.onChange}
-          type="text"
-          placeholder="Email Address"
-        />
-        <input
-          name="password"
-          value={password}
-          onChange={this.onChange}
-          type="password"
-          placeholder="Password"
-        />
-        <button disabled={isInvalid} type="submit">
-          Sign In
-        </button>
-
-        {error && <p>{error.message}</p>}
-      </form>
-    );
-  }
-}
-
-class SignInGoogleBase extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = { error: null };
-  }
-
-  onSubmit = event => {
-    this.props.firebase
-      .doSignInWithGoogle()
-      .then(socialAuthUser => {
-        // Create a user in your Firebase Realtime Database too
-        return this.props.firebase.user(socialAuthUser.user.uid).set({
-          username: socialAuthUser.user.displayName,
-          email: socialAuthUser.user.email,
-          roles: {},
-        });
-      })
-      .then(() => {
-        this.setState({ error: null });
-        this.props.history.push(ROUTES.HOME);
-      })
-      .catch(error => {
-        if (error.code === ERROR_CODE_ACCOUNT_EXISTS) {
-          error.message = ERROR_MSG_ACCOUNT_EXISTS;
-        }
-
-        this.setState({ error });
-      });
-
-    event.preventDefault();
-  };
-
-  render() {
-    const { error } = this.state;
-
-    return (
-      <form onSubmit={this.onSubmit}>
-        <button type="submit">Sign In with Google</button>
-
-        {error && <p>{error.message}</p>}
-      </form>
+      <div className={classes.root}>
+        <form onSubmit={this.onSubmit}>
+          <Typography variant="h4" gutterBottom>
+            Sign In
+          </Typography>
+          <Grid container spacing={4}>
+            <Grid item xs>
+              <TextField
+                name="email"
+                value={email}
+                onChange={this.onChange}
+                type="text"
+                placeholder="Email Address"
+                type="email"
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
+          <Grid container spacing={4}>
+            <Grid item xs>
+              <TextField
+                name="password"
+                value={password}
+                onChange={this.onChange}
+                type="password"
+                placeholder="Password"
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
+          <Grid container spacing={4}>
+            <Grid item xs>
+              <Button type="submit" disabled={isInvalid} variant="contained" color="primary" >Sign In</Button>
+            </Grid>
+          </Grid>
+          <Grid container spacing={4}>
+            <Grid item xs>
+              <Link to={ROUTES.PASSWORD_FORGET} color="inherit">Forgot Password?</Link>
+            </Grid>
+          </Grid>
+          <Grid container spacing={4}>
+            <Grid item xs>
+              Don't have an account? <Link to={ROUTES.SIGN_UP}>Sign Up</Link>
+            </Grid>
+          </Grid>
+          <Grid container spacing={4}>
+            <Grid item xs={12}>
+              {error && error.message}
+            </Grid>
+          </Grid>
+        </form>
+      </div>
     );
   }
 }
@@ -140,14 +127,10 @@ class SignInGoogleBase extends Component {
 const SignInForm = compose(
   withRouter,
   withFirebase,
+  withStyles(useStyles),
 )(SignInFormBase);
-
-const SignInGoogle = compose(
-  withRouter,
-  withFirebase,
-)(SignInGoogleBase);
 
 
 export default SignInPage;
 
-export { SignInForm, SignInGoogle};
+export { SignInForm };
