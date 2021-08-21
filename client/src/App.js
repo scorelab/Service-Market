@@ -25,6 +25,7 @@ import { compose } from "redux";
 import NewIntermediaryPage from "./components/Intermediation/new-intermediation";
 import { W3Provider } from "./components/Web3";
 import PasswordForgetPage from "./components/Account/pw-forgot";
+import HowItWorksPage from "./components/Static/how_it_works";
 
 class App extends Component {
 
@@ -52,6 +53,7 @@ class App extends Component {
               <Route exact from={ROUTES.ACCOUNT} render={props => <AccountPage {...props} />} />
               <Route exact from={ROUTES.NOTIFICATIONS} render={props => <Messages {...props} />} />
               <Route exact from={ROUTES.PASSWORD_FORGET} render={props => <PasswordForgetPage {...props} />} />
+              <Route exact from={ROUTES.HOW_IT_WORKS} render={props => <HowItWorksPage {...props}/>} />
             </Switch>
             <Footer />
           </div>

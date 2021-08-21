@@ -116,7 +116,7 @@ function TopMenu({ firebase }) {
                 >
                     <MenuIcon />
                 </IconButton>
-                <Button className={classes.menuButton} >How It Works</Button>
+                <Button className={classes.menuButton} component={Link} to={ROUTES.HOW_IT_WORKS} >How It Works</Button>
                 <Button className={classes.menuButton} >About</Button>
                 <Button className={classes.menuButton} >Contact</Button>
 
