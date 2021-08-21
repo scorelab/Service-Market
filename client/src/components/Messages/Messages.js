@@ -32,7 +32,8 @@ class Messages extends Component {
   onListenForMessages = () => {
     this.props.firebase
       .messages()
-      .orderByChild('createdAt')
+      .orderByChild('to')
+      .equalTo(this.props.authUser.uid)
       .limitToLast(this.props.limit)
       .on('value', snapshot => {
         this.props.onSetMessages(snapshot.val());

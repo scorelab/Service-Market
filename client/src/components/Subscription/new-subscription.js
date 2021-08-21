@@ -212,12 +212,16 @@ class NewSubscriptionFormBase extends Component {
       }),
       createdAt: this.props.firebase.serverValue.TIMESTAMP,
     }).then((res) => {
-      subList.forEach((e) => {
+      subList.forEach( async (e) => {
+        const service = await this.props.firebase.service(e.serviceId).get();
+        const serviceData = service.val();
+        const intermediary = await this.props.firebase.intermediary(serviceData.intermediary).get();
+        const intermediaryData = intermediary.val();
         this.props.firebase.messages().push({
           from: authUser.username,
-          to: e.intermediary,
+          to: intermediaryData.mediator,
           type: "Subscription Request",
-          subject: e.serviceName,
+          subject: serviceData.serviceName,
           subjectId: [res.key, e.serviceId],
 
         });
