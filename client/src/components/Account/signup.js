@@ -1,12 +1,11 @@
+import { Button, Grid, makeStyles, TextField, withStyles } from '@material-ui/core';
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import { withFirebase } from '../Firebase';
-import * as ROUTES from '../../constants/routes';
-import * as ROLES from '../../constants/roles';
-import * as ERRORS from '../../constants/errors';
-import MainBlock from '../Common/main-block';
-import { Button, Grid, makeStyles, TextField, Typography, withStyles } from '@material-ui/core';
+import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
+import * as ERRORS from '../../constants/errors';
+import * as ROUTES from '../../constants/routes';
+import MainBlock from '../Common/main-block';
+import { withFirebase } from '../Firebase';
 
 function SignUpPage(props) {
   return (
@@ -39,7 +38,6 @@ const INITIAL_STATE = {
   email: '',
   passwordOne: '',
   passwordTwo: '',
-  isAdmin: false,
   error: null,
 };
 
@@ -51,12 +49,8 @@ class SignUpFormBase extends Component {
   }
 
   onSubmit = event => {
-    const { username, email, passwordOne, isAdmin } = this.state;
+    const { username, email, passwordOne } = this.state;
     const roles = {};
-
-    if (isAdmin) {
-      roles[ROLES.ADMIN] = ROLES.ADMIN;
-    }
 
     this.props.firebase
       .doCreateUserWithEmailAndPassword(email, passwordOne)
@@ -100,7 +94,6 @@ class SignUpFormBase extends Component {
       email,
       passwordOne,
       passwordTwo,
-      isAdmin,
       error,
     } = this.state;
 
@@ -133,7 +126,6 @@ class SignUpFormBase extends Component {
                 name="email"
                 value={email}
                 onChange={this.onChange}
-                type="text"
                 placeholder="Email Address"
                 type="email"
                 variant="outlined"

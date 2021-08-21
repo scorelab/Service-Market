@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import MarketContract from "../../contracts/Market.json";
+import W3Context from "./context";
 import getWeb3 from "./getWeb3";
-import W3Context from "./context"
-import { toBuffer } from "ethereumjs-util";
-import { INVALID_DATA, WEB3_NOT_FOUND } from "../../constants/errors";
 
 const INITIAL_STATE = {
   web3: null,
@@ -89,7 +87,7 @@ export const W3Provider = ({ children }) => {
 
 
   useEffect(() => {
-    init()
+    init();
   }, [w3State.web3])
 
   return (

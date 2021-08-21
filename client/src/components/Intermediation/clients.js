@@ -1,49 +1,25 @@
-import React, { Component, useContext, useEffect, useState } from 'react';
-import MainBlock from '../Common/main-block';
-import ShowCase from '../Common/grid';
-import { withFirebase } from '../Firebase';
-import { connect } from 'react-redux';
-import { compose } from 'redux';
-import DeleteIcon from '@material-ui/icons/Delete';
+import {
+  Button,
+  ButtonGroup, Dialog, DialogActions, DialogContent, DialogTitle,
+  TextField
+} from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import {
-  Typography,
-  Grid,
-  Button,
-  ButtonGroup,
-  Select,
-  FormLabel,
-  FormControlLabel,
-  OutlinedInput,
-  FormControl,
-  InputLabel,
-  InputAdornment,
-  Box,
-  Input,
-  Chip,
-  MenuItem,
-  IconButton,
-  Modal,
-  Dialog,
-  DialogContent,
-  DialogActions,
-  DialogTitle,
-  TextField,
-} from '@material-ui/core';
-import LockIcon from '@material-ui/icons/Lock';
-import moment from 'moment';
-import { SERVICE_TYPES } from '../../constants/constants';
+import React, { Component, useContext, useState } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { WEB3_NOT_FOUND } from '../../constants/errors';
+import { MerkleTree } from '../../util/MerkelUtil';
+import MainBlock from '../Common/main-block';
+import { withFirebase } from '../Firebase';
 import { W3Provider } from '../Web3';
 import W3Context from '../Web3/context';
-import { MerkleTree } from '../../util/MerkelUtil';
-import { WEB3_NOT_FOUND } from '../../constants/errors';
 
 
 
@@ -83,7 +59,6 @@ class IntClientPage extends Component {
       .orderByChild('intermediation')
       .equalTo(this.props.authUser.uid)
       .on('value', snapshot => {
-        const clients = snapshot.val()
         this.setState({ loading: false, clients: snapshot.val() });
       });
   };
@@ -140,7 +115,7 @@ class IntClientPage extends Component {
 }
 
 const ClaimDialog = (props) => {
-  const { isOpen, handleClose, activeItem, firebase } = props
+  const { isOpen, handleClose, activeItem } = props
   const { web3, claimContract } = useContext(W3Context);
 
   const [claimIndex, setClaimIndex] = useState("");
@@ -149,7 +124,6 @@ const ClaimDialog = (props) => {
 
   const handleClaim = async () => {
     const {
-      contractIndex,
       contractOwner,
       intermediaryIndex,
       serviceIndex,

@@ -41,12 +41,12 @@ class MerkleTree {
 
     L(X, K, layer) {
         const l = X.length
-        if (l == 1) {
+        if (l === 1) {
             return this.concat(K[0], X[0]);
         }
 
         let j = Math.pow(2, Math.trunc(Math.log2(l)));
-        if (j == l) {
+        if (j === l) {
             j = Math.pow(2, Math.trunc(Math.log2(l - 1)));
         }
         return this.concat(
@@ -63,11 +63,11 @@ class MerkleTree {
 
     W(i, X, K, layer) {
         const l = X.length
-        if (l == 1) {
+        if (l === 1) {
             return [];
         }
         let j = Math.pow(2, Math.trunc(Math.log2(l)));
-        if (j == l) {
+        if (j === l) {
             j = Math.pow(2, Math.trunc(Math.log2(l - 1)));
         }
         if (i < j) {
@@ -144,14 +144,14 @@ class MerkleTree {
                     return buff;                        
                 });
                 const k2 = this.L(x1, k1, 1);
-                if (index1 == i2 & index2 == i3) {
+                if (index1 === i2 & index2 === i3) {
                     proofs[1] = this.W(i1, x1, k1, 1);
                 }
                 xs2.push(k2.slice(12, 32));
                 ks2.push(k2.slice(0, 12).fill(0, 6, 12));
             });
             const k3 = this.L(xs2, ks2, 2);
-            if (index2 == i3) {
+            if (index2 === i3) {
                 proofs[2] = this.W(i2, xs2, ks2, 2);
             }
             const h = k3.slice(12, 32);

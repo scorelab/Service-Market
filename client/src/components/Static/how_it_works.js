@@ -1,7 +1,5 @@
-import { Grid } from "@material-ui/core";
-import React, { Component } from "react";
-import MainBlock from "../Common/main-block";
 import { makeStyles } from '@material-ui/core';
+import React from "react";
 
 const useStyles = makeStyles(theme => ({
     toolbar: theme.mixins.toolbar,
@@ -22,11 +20,9 @@ function HowItWorksPage(props) {
     return (
         <main className={classes.root}>
             <div className={classes.toolbar} />
-            <iframe frameborder="0" className={classes.content} src="how.html"></iframe>
+            <iframe title="How It Works" frameborder="0" className={classes.content} src="how.html"></iframe>
         </main>
     );
 
 }
 export default HowItWorksPage;
-
-// style={{ width: "70vw", height: "70vh", overflow: "hidden", display: "block" }}

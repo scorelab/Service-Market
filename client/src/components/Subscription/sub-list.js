@@ -1,5 +1,7 @@
-import React, { useContext, useState } from 'react';
-import moment from 'moment';
+import {
+    Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField
+} from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -7,36 +9,13 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import DeleteIcon from '@material-ui/icons/Delete';
-import {
-    Typography,
-    Grid,
-    Button,
-    ButtonGroup,
-    Select,
-    FormLabel,
-    FormControlLabel,
-    OutlinedInput,
-    FormControl,
-    InputLabel,
-    InputAdornment,
-    Box,
-    Input,
-    Chip,
-    MenuItem,
-    IconButton,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    TextField,
-    DialogActions,
-    DialogContentText,
-} from '@material-ui/core';
-import { MerkleTree } from '../../util/MerkelUtil';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import { toBuffer } from 'ethereumjs-util';
+import moment from 'moment';
+import React, { useState } from 'react';
 import { WEB3_NOT_FOUND } from '../../constants/errors';
+import { MerkleTree } from '../../util/MerkelUtil';
 
 const useStyles = makeStyles({
     table: {

@@ -1,31 +1,30 @@
-import React, { Component, useContext } from "react";
-import { ThemeProvider } from '@material-ui/core/styles'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import theme from './theme'
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { ThemeProvider } from '@material-ui/core/styles';
+import React, { Component } from "react";
 import { Route, Switch } from "react-router-dom";
+import { compose } from "redux";
+import "./App.css";
+import AccountPage from './components/Account/account';
+import PasswordForgetPage from "./components/Account/pw-forgot";
+import SignInPage from './components/Account/signin';
+import SignUpPage from './components/Account/signup';
+import AllItemPage from './components/All/all_items';
+import Footer from './components/Common/footer';
 import TopMenu from './components/Common/menu';
 import SideMenu from './components/Common/sidemenu';
-import Footer from './components/Common/footer';
+import IntClientPage from './components/Intermediation/clients';
+import IntermediationPage from './components/Intermediation/intermediations';
+import NewIntermediaryPage from "./components/Intermediation/new-intermediation";
+import Messages from "./components/Messages/Messages";
+import ServiceClientPage from './components/Service/clients';
 import NewServicePage from './components/Service/new-service';
 import ServicePage from './components/Service/services';
-import SignUpPage from './components/Account/signup'
-import SignInPage from './components/Account/signin'
-import AccountPage from './components/Account/account'
-import NewSubscriptionPage from './components/Subscription/new-subscription'
-import SubscriptionPage from './components/Subscription/subscriptions'
-import IntermediationPage from './components/Intermediation/intermediations'
-import IntClientPage from './components/Intermediation/clients'
-import ServiceClientPage from './components/Service/clients'
-import AllItemPage from './components/All/all_items'
-import "./App.css";
-import * as ROUTES from './constants/routes';
 import { withAuthentication } from './components/Session';
-import Messages from "./components/Messages/Messages";
-import { compose } from "redux";
-import NewIntermediaryPage from "./components/Intermediation/new-intermediation";
-import { W3Provider } from "./components/Web3";
-import PasswordForgetPage from "./components/Account/pw-forgot";
 import HowItWorksPage from "./components/Static/how_it_works";
+import NewSubscriptionPage from './components/Subscription/new-subscription';
+import SubscriptionPage from './components/Subscription/subscriptions';
+import * as ROUTES from './constants/routes';
+import theme from './theme';
 
 class App extends Component {
 

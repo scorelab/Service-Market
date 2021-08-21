@@ -1,6 +1,6 @@
+import { Button, Grid, TextField } from '@material-ui/core';
 import React, { Component } from 'react';
 import { withFirebase } from '../Firebase';
-import { Button, Grid, makeStyles, TextField, Typography, withStyles } from '@material-ui/core';
 
 const INITIAL_STATE = {
   passwordOne: '',

@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import { withFirebase } from '../Firebase';
-import MainBlock from '../Common/main-block';
-import { Button, TextField, Grid } from '@material-ui/core';
-import { compose } from 'recompose';
+import { Button, Grid, TextField } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
+import MainBlock from '../Common/main-block';
+import { withFirebase } from '../Firebase';
 
 const PasswordForgetPage = () => (
   <MainBlock title="Recover Password">
@@ -76,7 +76,6 @@ class PasswordForgetFormBase extends Component {
                 name="email"
                 value={this.state.email}
                 onChange={this.onChange}
-                type="text"
                 placeholder="Email Address"
                 type="email"
                 variant="outlined"

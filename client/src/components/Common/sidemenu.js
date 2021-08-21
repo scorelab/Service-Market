@@ -1,28 +1,25 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { Box, Button, Divider, Grid, IconButton, Typography } from '@material-ui/core';
+import Collapse from "@material-ui/core/Collapse";
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Collapse from "@material-ui/core/Collapse";
+import { makeStyles } from '@material-ui/core/styles';
+import CreateOutlined from '@material-ui/icons/CreateOutlined';
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import Person from '@material-ui/icons/Person';
-import Work from '@material-ui/icons/Work';
-import CreateOutlined from '@material-ui/icons/CreateOutlined';
-import ViewArray from '@material-ui/icons/ViewArray';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box, Button, Divider, IconButton, Typography } from '@material-ui/core';
-import { Grid } from '@material-ui/core';
-import * as ROUTES from '../../constants/routes';
-import { Link } from "react-router-dom";
-import TouchAppIcon from '@material-ui/icons/TouchApp';
-import StreetviewIcon from '@material-ui/icons/Streetview';
 import RoomServiceIcon from '@material-ui/icons/RoomService';
-import W3Context from '../Web3/context';
-import { W3Provider } from '../Web3';
+import StreetviewIcon from '@material-ui/icons/Streetview';
 import SyncIcon from '@material-ui/icons/Sync';
+import TouchAppIcon from '@material-ui/icons/TouchApp';
+import ViewArray from '@material-ui/icons/ViewArray';
+import React, { useContext, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from "react-router-dom";
+import * as ROUTES from '../../constants/routes';
+import { W3Provider } from '../Web3';
+import W3Context from '../Web3/context';
 
 const drawerWidth = 240;
 
@@ -107,7 +104,7 @@ function SideMenu() {
 const Wallet = (props) => {
 
   const classes = useStyles();
-  const { loading, account, contract, balance, refresh } = useContext(W3Context);
+  const { account, balance, refresh } = useContext(W3Context);
   const handleRefresh = () => {
     refresh()
   };

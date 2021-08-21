@@ -1,34 +1,20 @@
-import React, { Component, useState } from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import { withFirebase } from '../Firebase';
-import * as ROUTES from '../../constants/routes';
-import * as ROLES from '../../constants/roles';
-import * as ERRORS from '../../constants/errors';
-import MainBlock from '../Common/main-block';
-import 'firebase/firestore';
-
 import {
-  Typography,
-  Grid,
-  Button,
-  TextField,
-  Select,
-  FormLabel,
-  FormControlLabel,
-  OutlinedInput,
-  FormControl,
-  InputLabel,
-  InputAdornment,
-  Box,
+  Button, FormControl, Grid, InputAdornment, InputLabel, OutlinedInput, Select, TextField
 } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import 'firebase/firestore';
+import React, { Component } from 'react';
 import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
-
-import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import { compose } from 'redux';
 import { SERVICE_TYPES } from '../../constants/constants';
 import AddressButton from '../Common/address';
+import MainBlock from '../Common/main-block';
+import { withFirebase } from '../Firebase';
+
+
 
 function NewIntermediaryPage(props) {
 
@@ -116,7 +102,6 @@ class NewIntermediaryFormBase extends Component {
       intermediaryDetails,
       intermediaryType,
       brokerFee,
-      focusedInput,
       address,
       error,
 

@@ -1,38 +1,22 @@
-import React, { Component, useContext, useState } from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import { withFirebase } from '../Firebase';
-import * as ROUTES from '../../constants/routes';
-import * as ROLES from '../../constants/roles';
-import * as ERRORS from '../../constants/errors';
-import MainBlock from '../Common/main-block';
-import 'firebase/firestore';
 import {
-  Typography,
-  Grid,
-  Button,
-  TextField,
-  Select,
-  FormLabel,
-  FormControlLabel,
-  OutlinedInput,
-  FormControl,
-  InputLabel,
-  InputAdornment,
-  Box,
-  IconButton,
+  Box, Button, FormControl, FormControlLabel, Grid, InputAdornment, InputLabel, OutlinedInput, Select, TextField
 } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import 'firebase/firestore';
+import moment from 'moment';
+import React, { Component } from 'react';
+import { DateRangePicker } from "react-dates";
 import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
-
-import { DateRangePicker } from "react-dates";
-import moment from 'moment';
-import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { green } from '@material-ui/core/colors';
+import { withRouter } from 'react-router-dom';
+import { compose } from 'redux';
 import { SERVICE_TYPES } from '../../constants/constants';
 import { MerkleTree } from '../../util/MerkelUtil';
-import AddressButton from '../Common/address'
+import AddressButton from '../Common/address';
+import MainBlock from '../Common/main-block';
+import { withFirebase } from '../Firebase';
+
 
 function NewServicePage(props) {
 
@@ -111,7 +95,6 @@ class NewServiceFormBase extends Component {
       endDate,
       unitValue,
       address,
-      intermediaries
     } = this.state;
 
     const secrets = this.getRandomNumbers(startDate, endDate);

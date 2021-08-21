@@ -1,23 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-
-import { withAuthorization, withEmailVerification } from '../Session';
-import { withFirebase } from '../Firebase';
-import { PasswordForgetForm } from './pw-forgot';
-import PasswordChangeForm from './pw-change';
 import MainBlock from '../Common/main-block';
-
-const SIGN_IN_METHODS = [
-  {
-    id: 'password',
-    provider: null,
-  },
-  {
-    id: 'google.com',
-    provider: 'googleProvider',
-  },
-];
+import { withAuthorization, withEmailVerification } from '../Session';
+import PasswordChangeForm from './pw-change';
+import { PasswordForgetForm } from './pw-forgot';
 
 const AccountPage = ({ authUser }) => (
   <MainBlock title="Account">

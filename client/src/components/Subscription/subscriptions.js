@@ -1,50 +1,27 @@
-import React, { Component, useContext } from 'react';
-import MainBlock from '../Common/main-block';
-import ShowCase from '../Common/grid';
-import { withFirebase } from '../Firebase';
-import { connect } from 'react-redux';
-import { compose } from 'redux';
-import DeleteIcon from '@material-ui/icons/Delete';
+import {
+  Button,
+  ButtonGroup, Dialog, DialogActions, DialogContent, DialogTitle
+} from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import {
-  Typography,
-  Grid,
-  Button,
-  ButtonGroup,
-  Select,
-  FormLabel,
-  FormControlLabel,
-  OutlinedInput,
-  FormControl,
-  InputLabel,
-  InputAdornment,
-  Box,
-  Input,
-  Chip,
-  MenuItem,
-  IconButton,
-  Modal,
-  Dialog,
-  DialogContent,
-  DialogActions,
-  DialogTitle,
-} from '@material-ui/core';
 import LockIcon from '@material-ui/icons/Lock';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import moment from 'moment';
-import SubscriptionList from './sub-list';
+import React, { Component, useContext } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { WEB3_NOT_FOUND } from '../../constants/errors';
+import { MerkleTree } from '../../util/MerkelUtil';
+import MainBlock from '../Common/main-block';
+import { withFirebase } from '../Firebase';
 import { W3Provider } from '../Web3';
 import W3Context from '../Web3/context';
-import { MerkleTree } from '../../util/MerkelUtil';
-import { WEB3_NOT_FOUND } from '../../constants/errors';
-
-
+import SubscriptionList from './sub-list';
 
 class SubscriptionPage extends Component {
 
@@ -97,9 +74,6 @@ class SubscriptionPage extends Component {
     const {
       subscriptions,
       loading,
-      isOpen,
-      activeItemName,
-      activeItemId,
     } = this.state;
 
     return (
@@ -208,7 +182,7 @@ const SubscriptionDialog = (props) => {
         service: subService.serviceId,
         data: [hs, ks]
       }
-      const addIndex = K.findIndex((obj => obj.address == intermediaryData.address));
+      const addIndex = K.findIndex((obj => obj.address === intermediaryData.address));
       if (addIndex < 0) {
         K.push(
           {
@@ -235,8 +209,8 @@ const SubscriptionDialog = (props) => {
 
         for (let s = 0; s < subscription.subList.length; s++) {
           const subService = subscription.subList[s];
-          const addIndex = K.findIndex((obj => obj.address == subService.intermediaryAddress));
-          const servIndex = K[addIndex]["services"].findIndex((obj => obj.service == subService.serviceId));
+          const addIndex = K.findIndex((obj => obj.address === subService.intermediaryAddress));
+          const servIndex = K[addIndex]["services"].findIndex((obj => obj.service === subService.serviceId));
           firebase.clients().push({
             service: subService.producer,
             serviceId: subService.serviceId,
@@ -246,7 +220,7 @@ const SubscriptionDialog = (props) => {
             intermediationId: subService.intermediaryId,
             intermediaryIndex: addIndex,
             contractOwner: account,
-            tree: K //todo remove redundant ==> change WW
+            tree: K //todo remove redundant ===> change WW
           });
         }
       } else {
@@ -267,7 +241,7 @@ const SubscriptionDialog = (props) => {
           serviceAddress={serviceAddress}
           subList={subList ? subList : []}
           web3={web3}
-          isLockCreated={status == "Lock Created"}
+          isLockCreated={status === "Lock Created"}
           firebase={firebase} />
       </DialogContent>
       <DialogActions>

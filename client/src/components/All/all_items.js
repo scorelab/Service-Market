@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import MainBlock from '../Common/main-block';
 import ShowCase from '../Common/grid';
 import { withFirebase } from '../Firebase';
-import { connect } from 'react-redux';
 import { compose } from 'redux';
 
 

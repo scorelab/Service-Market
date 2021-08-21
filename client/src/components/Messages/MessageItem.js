@@ -1,7 +1,7 @@
-import { Avatar, Button, ButtonGroup, Divider, IconButton, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@material-ui/core';
-import React, { Component } from 'react';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import { Divider, IconButton, ListItem, ListItemText, Typography } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import React, { Component } from 'react';
 
 class MessageItem extends Component {
 
