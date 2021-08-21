@@ -43,6 +43,7 @@ import { SERVICE_TYPES } from '../../constants/constants';
 import { W3Provider } from '../Web3';
 import W3Context from '../Web3/context';
 import { MerkleTree } from '../../util/MerkelUtil';
+import { WEB3_NOT_FOUND } from '../../constants/errors';
 
 
 
@@ -140,7 +141,7 @@ class IntClientPage extends Component {
 
 const ClaimDialog = (props) => {
   const { isOpen, handleClose, activeItem, firebase } = props
-  const { claimContract } = useContext(W3Context);
+  const { web3, claimContract } = useContext(W3Context);
 
   const [claimIndex, setClaimIndex] = useState("");
   const [claimSecret, setClaimSecret] = useState("");
@@ -160,18 +161,25 @@ const ClaimDialog = (props) => {
     const mt = new MerkleTree();
 
     const witness = mt.WW(tree, claimIndex, serviceIndex, intermediaryIndex)
-    await claimContract(
-      contractOwner,
-      contractIndex,
-      witness,
-      claimSecret,
-      value,
-      expire,
-      claimIndex,
-      serviceIndex,
-      intermediaryIndex,
-      claimSig
-    );
+    if (web3) {
+      const result = await claimContract(
+        contractOwner,
+        witness,
+        claimSecret,
+        value,
+        expire,
+        claimIndex,
+        serviceIndex,
+        intermediaryIndex,
+        claimSig
+      );
+      console.log(result);
+      const balance = await web3.eth.getBalance(result.from);
+      alert("New Balance is",balance);
+    } else {
+      alert(WEB3_NOT_FOUND);
+    }
+    handleClose();
   };
 
   const onChangeSecret = event => {

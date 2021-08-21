@@ -36,6 +36,7 @@ import {
 } from '@material-ui/core';
 import { MerkleTree } from '../../util/MerkelUtil';
 import { toBuffer } from 'ethereumjs-util';
+import { WEB3_NOT_FOUND } from '../../constants/errors';
 
 const useStyles = makeStyles({
     table: {
@@ -118,11 +119,16 @@ const SigDialog = (props) => {
     const [signature, setSignature] = useState("");
 
     const handleSign = () => {
-        const mt = new MerkleTree();
-        const hashVal = mt.H(mt.concat(toBuffer('0x'+signVal.toString('hex')), toBuffer(intAddress)));
-        web3.eth.personal.sign('0x' + hashVal.toString('hex'), serviceAddress, (err, result) => {
-            setSignature(result.toString('hex'));
-        });
+        if (web3) {
+            const mt = new MerkleTree();
+            const hashVal = mt.H(mt.concat(toBuffer('0x' + signVal.toString('hex')), toBuffer(intAddress)));
+
+            web3.eth.personal.sign('0x' + hashVal.toString('hex'), serviceAddress, (err, result) => {
+                setSignature(result.toString('hex'));
+            });
+        } else {
+            alert(WEB3_NOT_FOUND);
+        }
     };
 
     const onSignVal = event => {
@@ -156,7 +162,7 @@ const SigDialog = (props) => {
                     Sign
                 </Button>
                 <Button onClick={handleClose} color="primary">
-                    Cancel
+                    OK
                 </Button>
             </DialogActions>
         </Dialog>

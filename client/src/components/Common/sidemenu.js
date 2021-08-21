@@ -122,18 +122,27 @@ const Wallet = (props) => {
           <IconButton aria-label="delete" onClick={handleRefresh}><SyncIcon /></IconButton>
         </Grid>
       </Grid>
-      <div className={classes.data}>
-        <Typography color="textSecondary">
-          Status: {!!account ? "Connected" : "Not Connected"}
-        </Typography>
-        <Typography color="textSecondary">
-          Account: {account ? account.toString().replace(account.toString().substring(4, 40), "***") : ' -'}
-        </Typography>
-        <Typography color="textSecondary">
-          Balance: {account ? Number(balance).toFixed(3) + " Eth" : ' -'}
-        </Typography>
-      </div>
-      <Button size="small">See More</Button>
+      {!!account &&
+        <div className={classes.data}>
+          <Typography color="textSecondary">
+            Status: "Connected"
+          </Typography>
+          <Typography color="textSecondary">
+            Account: {account ? account.toString().replace(account.toString().substring(4, 40), "***") : ' -'}
+          </Typography>
+          <Typography color="textSecondary">
+            Balance: {account ? Number(balance).toFixed(3) + " Eth" : ' -'}
+          </Typography>
+          <Button size="small">See More</Button>
+        </div>
+      }
+      {!account &&
+        <div className={classes.data}>
+          <Typography color="textSecondary">
+            Please Connect to the wallet.
+          </Typography>
+        </div>
+      }
     </div>
   );
 };

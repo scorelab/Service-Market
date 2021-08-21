@@ -42,6 +42,7 @@ import SubscriptionList from './sub-list';
 import { W3Provider } from '../Web3';
 import W3Context from '../Web3/context';
 import { MerkleTree } from '../../util/MerkelUtil';
+import { WEB3_NOT_FOUND } from '../../constants/errors';
 
 
 
@@ -222,30 +223,39 @@ const SubscriptionDialog = (props) => {
     }
     const mt = new MerkleTree()
     const [value, lock] = mt.root_slice(mt.LL(K));
-    const account = await createContract(lock, expire, value)
 
-    firebase.subscription(activeItemId).update({
-      'status': "Lock Created",
-      'account': account
-    });
+    if (web3) {
+      const result = await createContract(lock, expire, value)
+      if (!!result.transactionHash) {
+        const account = result.from;
+        firebase.subscription(activeItemId).update({
+          'status': "Lock Created",
+          'account': account
+        });
 
-    for (let s = 0; s < subscription.subList.length; s++) {
-      const subService = subscription.subList[s];
-      const addIndex = K.findIndex((obj => obj.address == subService.intermediaryAddress));
-      const servIndex = K[addIndex]["services"].findIndex((obj => obj.service == subService.serviceId));
-      firebase.clients().push({
-        service: subService.producer,
-        serviceId: subService.serviceId,
-        serviceIndex: servIndex,
-        intermediation: subService.intermediary,
-        intermediationAddress: subService.intermediaryAddress,
-        intermediationId: subService.intermediaryId,
-        intermediaryIndex: addIndex,
-        contractOwner: account,
-        tree: K //todo remove redundant ==> change WW
-      });
+        for (let s = 0; s < subscription.subList.length; s++) {
+          const subService = subscription.subList[s];
+          const addIndex = K.findIndex((obj => obj.address == subService.intermediaryAddress));
+          const servIndex = K[addIndex]["services"].findIndex((obj => obj.service == subService.serviceId));
+          firebase.clients().push({
+            service: subService.producer,
+            serviceId: subService.serviceId,
+            serviceIndex: servIndex,
+            intermediation: subService.intermediary,
+            intermediationAddress: subService.intermediaryAddress,
+            intermediationId: subService.intermediaryId,
+            intermediaryIndex: addIndex,
+            contractOwner: account,
+            tree: K //todo remove redundant ==> change WW
+          });
+        }
+      } else {
+        alert("error");
+      }
     }
-
+    else {
+      alert(WEB3_NOT_FOUND);
+    }
     handleClose();
   };
 
