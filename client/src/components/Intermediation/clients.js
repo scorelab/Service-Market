@@ -1,48 +1,25 @@
-import React, { Component, useContext, useEffect, useState } from 'react';
-import MainBlock from '../Common/main-block';
-import ShowCase from '../Common/grid';
-import { withFirebase } from '../Firebase';
-import { connect } from 'react-redux';
-import { compose } from 'redux';
-import DeleteIcon from '@material-ui/icons/Delete';
+import {
+  Button,
+  ButtonGroup, Dialog, DialogActions, DialogContent, DialogTitle,
+  TextField
+} from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import {
-  Typography,
-  Grid,
-  Button,
-  ButtonGroup,
-  Select,
-  FormLabel,
-  FormControlLabel,
-  OutlinedInput,
-  FormControl,
-  InputLabel,
-  InputAdornment,
-  Box,
-  Input,
-  Chip,
-  MenuItem,
-  IconButton,
-  Modal,
-  Dialog,
-  DialogContent,
-  DialogActions,
-  DialogTitle,
-  TextField,
-} from '@material-ui/core';
-import LockIcon from '@material-ui/icons/Lock';
-import moment from 'moment';
-import { SERVICE_TYPES } from '../../constants/constants';
+import React, { Component, useContext, useState } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { WEB3_NOT_FOUND } from '../../constants/errors';
+import { MerkleTree } from '../../util/MerkelUtil';
+import MainBlock from '../Common/main-block';
+import { withFirebase } from '../Firebase';
 import { W3Provider } from '../Web3';
 import W3Context from '../Web3/context';
-import { MerkleTree } from '../../util/MerkelUtil';
 
 
 
@@ -79,8 +56,9 @@ class IntClientPage extends Component {
   onListenForClients = () => {
     this.props.firebase
       .clients()
+      .orderByChild('intermediation')
+      .equalTo(this.props.authUser.uid)
       .on('value', snapshot => {
-        const clients = snapshot.val()
         this.setState({ loading: false, clients: snapshot.val() });
       });
   };
@@ -137,37 +115,45 @@ class IntClientPage extends Component {
 }
 
 const ClaimDialog = (props) => {
-  const { isOpen, handleClose, activeItem, firebase } = props
-  const { claimContract } = useContext(W3Context);
+  const { isOpen, handleClose, activeItem } = props
+  const { web3, claimContract } = useContext(W3Context);
 
   const [claimIndex, setClaimIndex] = useState("");
   const [claimSecret, setClaimSecret] = useState("");
+  const [claimSig, setClaimSig] = useState("");
 
   const handleClaim = async () => {
     const {
-      contractIndex,
       contractOwner,
       intermediaryIndex,
       serviceIndex,
       tree
     } = activeItem
-    const value = tree[intermediaryIndex]["services"][serviceIndex]["data"][1][0]
-    const expire = tree[intermediaryIndex]["services"][serviceIndex]["data"][1][0]
+    const value = tree[intermediaryIndex]["services"][serviceIndex]["data"][1][0][0]
+    const expire = tree[intermediaryIndex]["services"][serviceIndex]["data"][1][0][1]
 
     const mt = new MerkleTree();
 
     const witness = mt.WW(tree, claimIndex, serviceIndex, intermediaryIndex)
-    await claimContract(
-      contractOwner,
-      contractIndex,
-      witness,
-      claimSecret,
-      value,
-      expire,
-      claimIndex,
-      serviceIndex,
-      intermediaryIndex
-    );
+    if (web3) {
+      const result = await claimContract(
+        contractOwner,
+        witness,
+        claimSecret,
+        value,
+        expire,
+        claimIndex,
+        serviceIndex,
+        intermediaryIndex,
+        claimSig
+      );
+      console.log(result);
+      const balance = await web3.eth.getBalance(result.from);
+      alert("New Balance is",balance);
+    } else {
+      alert(WEB3_NOT_FOUND);
+    }
+    handleClose();
   };
 
   const onChangeSecret = event => {
@@ -176,6 +162,10 @@ const ClaimDialog = (props) => {
 
   const onChangeIndex = event => {
     setClaimIndex(event.target.value);
+  };
+
+  const onChangeSig = event => {
+    setClaimSig(event.target.value);
   };
 
   return (
@@ -195,7 +185,13 @@ const ClaimDialog = (props) => {
           label="Secret"
           defaultValue={claimSecret}
           onChange={onChangeSecret}
-          type="password"
+          variant="outlined"
+        />
+        <TextField
+          id="claimSig"
+          label="Signature"
+          defaultValue={claimSig}
+          onChange={onChangeSig}
           variant="outlined"
         />
       </DialogContent>

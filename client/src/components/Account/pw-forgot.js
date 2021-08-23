@@ -1,16 +1,34 @@
+import { Button, Grid, TextField } from '@material-ui/core';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-
-import { withFirebase } from '../Firebase';
-import * as ROUTES from '../../constants/routes';
+import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 import MainBlock from '../Common/main-block';
+import { withFirebase } from '../Firebase';
 
 const PasswordForgetPage = () => (
-  <MainBlock>
-    <h1>PasswordForget</h1>
+  <MainBlock title="Recover Password">
     <PasswordForgetForm />
   </MainBlock>
 );
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+  datepicker: {
+    padding: 0.5,
+    border: 1,
+    borderColor: "silver",
+    borderRadius: "3px",
+
+  },
+}));
 
 const INITIAL_STATE = {
   email: '',
@@ -45,36 +63,51 @@ class PasswordForgetFormBase extends Component {
 
   render() {
     const { email, error } = this.state;
-
+    const { classes } = this.props;
     const isInvalid = email === '';
 
     return (
-      <form onSubmit={this.onSubmit}>
-        <input
-          name="email"
-          value={this.state.email}
-          onChange={this.onChange}
-          type="text"
-          placeholder="Email Address"
-        />
-        <button disabled={isInvalid} type="submit">
-          Reset My Password
-        </button>
-
-        {error && <p>{error.message}</p>}
-      </form>
+      <div className={classes.root}>
+        <form onSubmit={this.onSubmit}>
+          <Grid container spacing={4}>
+            <Grid item xs={8}>
+              <TextField
+                fullWidth
+                name="email"
+                value={this.state.email}
+                onChange={this.onChange}
+                placeholder="Email Address"
+                type="email"
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
+          <Grid container spacing={4}>
+            <Grid item xs={2}>
+              <Button fullWidth type="submit" disabled={isInvalid} variant="contained" color="primary" >Reset Password</Button>
+            </Grid>
+          </Grid>
+          <Grid container spacing={4}>
+            <Grid item xs={12}>
+              {error && error.message}
+            </Grid>
+          </Grid>
+        </form>
+      </div>
     );
   }
 }
 
-const PasswordForgetLink = () => (
-  <p>
-    <Link to={ROUTES.PASSWORD_FORGET}>Forgot Password?</Link>
-  </p>
-);
+
+
+
 
 export default PasswordForgetPage;
 
-const PasswordForgetForm = withFirebase(PasswordForgetFormBase);
+const PasswordForgetForm = compose(
+  withRouter,
+  withFirebase,
+  withStyles(useStyles),
+)(PasswordForgetFormBase);
 
-export { PasswordForgetForm, PasswordForgetLink };
+export { PasswordForgetForm };

@@ -1,3 +1,4 @@
+import { Button,Typography } from '@material-ui/core';
 import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
@@ -29,26 +30,23 @@ const withEmailVerification = Component => {
       return needsEmailVerification(this.props.authUser) ? (
         <MainBlock>
           {this.state.isSent ? (
-            <p>
+            <Typography variant="body1" color="textSecondary" component="p">
               E-Mail confirmation sent: Check you E-Mails (Spam folder
               included) for a confirmation E-Mail. Refresh this page
               once you confirmed your E-Mail.
-            </p>
+            </Typography>
           ) : (
-            <p>
+            <Typography variant="body1" color="textSecondary" component="p">
               Verify your E-Mail: Check you E-Mails (Spam folder
               included) for a confirmation E-Mail or send another
               confirmation E-Mail.
-            </p>
+            </Typography>
           )}
-
-          <button
-            type="button"
-            onClick={this.onSendEmailVerification}
-            disabled={this.state.isSent}
-          >
+          <br></br>
+          <Button onClick={this.onSendEmailVerification} type="button" variant="contained" color="primary" >
             Send confirmation E-Mail
-          </button>
+          </Button>
+
         </MainBlock>
       ) : (
         <Component {...this.props} />

@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import MarketContract from "../../contracts/Market.json";
+import W3Context from "./context";
 import getWeb3 from "./getWeb3";
-import W3Context from "./context"
-import { toBuffer } from "ethereumjs-util";
 
 const INITIAL_STATE = {
   web3: null,
@@ -62,35 +61,37 @@ export const W3Provider = ({ children }) => {
         gas: 1000000,
         value: w3State.web3.utils.toWei(value.toString(), "Gwei")
       }
-    );
-    const index = result.events.NewContract.returnValues.index;
-    return { account, index };
+    )
+    return result;
   }
 
-  const claimContract = async (owner, index, witness, secret, value, expire, i1, i2, i3) => {
-    const account = w3State.account;
-    const w1 = witness[1]?witness[1].map(el => Buffer.from(el.slice(0,32))):[];
-    const w2 = witness[2]?witness[2].map(el => Buffer.from(el)):[];
-    const w3 = witness[3]?witness[3].map(el => Buffer.from(el)):[];
-    const x1 = toBuffer(secret)
-    let v1 = Buffer.alloc(6);
-    v1.writeIntBE(value, 0, 6);
-    let e1 = Buffer.alloc(6);
-    e1.writeIntBE(expire, 0, 6);
-    const result = await w3State.contract.methods.claim(
-      owner, index, w1, w2, w3, x1, v1, e1, i1, i2, i3
+  const claimContract = async (owner, witness, secret, value, expire, i1, i2, i3, sig) => {
+    const w1 = witness[1] ? witness[1].map(el => '0x' + el.toString('hex')) : [];
+    const w2 = witness[2] ? witness[2].map(el => '0x' + el.toString('hex')) : [];
+    const w3 = witness[3] ? witness[3].map(el => '0x' + el.toString('hex')) : [];
+    const v1 = w3State.web3.utils.padLeft(w3State.web3.utils.toHex(value), 12).toString();
+    const e1 = w3State.web3.utils.padLeft(w3State.web3.utils.toHex(expire), 12).toString();
+
+    const signature = sig.split('x')[1];
+    var r = Buffer.from(signature.substring(0, 64), 'hex')
+    var s = Buffer.from(signature.substring(64, 128), 'hex')
+    var v = Buffer.from((parseInt(signature.substring(128, 130)) + 27).toString());
+
+    const result = w3State.contract.methods.claim(
+      owner, [w1, w2, w3], secret, v1, e1, i1, i2, i3, v, s, r
     ).send(
-      { from: account, gas: 1000000 }
-    );
+      { from: w3State.account, gas: 4612387 }
+    )
+    return result;
   }
 
 
   useEffect(() => {
-    init()
-  }, [])
+    init();
+  }, [w3State.web3])
 
   return (
-    <W3Context.Provider value={{ ...w3State, refresh: refresh, createContract: createContract, claimContract:claimContract }}>
+    <W3Context.Provider value={{ ...w3State, refresh: refresh, createContract: createContract, claimContract: claimContract }}>
       {children}
     </W3Context.Provider>
   )

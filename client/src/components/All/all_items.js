@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import MainBlock from '../Common/main-block';
 import ShowCase from '../Common/grid';
 import { withFirebase } from '../Firebase';
-import { connect } from 'react-redux';
 import { compose } from 'redux';
 
 
-class ServicePage extends Component {
+class AllItemPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
       services: [],
+      intermediaries: []
     };
   }
 
@@ -23,38 +23,37 @@ class ServicePage extends Component {
   }
 
   onListenForServices = () => {
-    if (this.props.authUser) {
       this.props.firebase
         .services()
-        .orderByChild("producer")
-        .equalTo(this.props.authUser.uid)
         .on('value', snapshot => {
           this.setState({ loading: false, services: snapshot.val() });
         });
-    }else{
-      this.setState({ loading: false,services:[]});
-    }
+        this.props.firebase
+        .intermediaries()
+        .on('value', snapshot => {
+          this.setState({ loading: false, intermediaries: snapshot.val() });
+        });
+    
   };
 
   componentWillUnmount() {
     this.props.firebase.services().off();
+    this.props.firebase.intermediaries().off();
   }
 
 
   render() {
-    const { services, loading } = this.state;
+    const { services, intermediaries, loading } = this.state;
 
     return (
-      <MainBlock title="My Services">
+      <MainBlock title="">
         {loading && <div>Loading ...</div>}
 
         {services && (
-          <ShowCase
-            services={services}
-          />
+          <ShowCase services={services} intermediaries={intermediaries}/>
         )}
 
-        {!services && <div>There are no services ...</div>}
+        {!services && intermediaries && <div>There are no items ...</div>}
 
       </MainBlock>
     );
@@ -62,14 +61,6 @@ class ServicePage extends Component {
 }
 
 
-
-const mapStateToProps = state => ({
-  authUser: state.sessionState.authUser,
-});
-
 export default compose(
   withFirebase,
-  connect(
-    mapStateToProps,
-  ),
-)(ServicePage);
+)(AllItemPage);

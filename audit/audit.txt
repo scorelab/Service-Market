@@ -1,0 +1,238 @@
+[0;31mSeverity:    LOW
+Pattern:     External Calls of Functions
+Description: A public function that is never called within the
+             contract should be marked as external
+Type:        Violation
+Contract:    Market
+Line:        27
+Source: 
+> 
+>     function newContract(bytes20 lock, uint256 expire ) public payable {
+>     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>         require(msg.value > 0);
+
+[0m
+[0;31mSeverity:    LOW
+Pattern:     External Calls of Functions
+Description: A public function that is never called within the
+             contract should be marked as external
+Type:        Violation
+Contract:    Market
+Line:        94
+Source: 
+> 
+>     function refund() public payable {
+>     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>         Contract memory c = contracts[msg.sender];
+
+[0m
+[0;31mSeverity:    LOW
+Pattern:     External Calls of Functions
+Description: A public function that is never called within the
+             contract should be marked as external
+Type:        Violation
+Contract:    Market
+Line:        135
+Source: 
+> 
+>     function claim(
+>     ^^^^^^^^^^^^^^^
+>         address owner,
+
+[0m
+[0;33mSeverity:    MEDIUM
+Pattern:     Missing Input Validation
+Description: Method arguments must be sanitized before they are used
+             in computations.
+Type:        Warning
+Contract:    Market
+Line:        135
+Source: 
+> 
+>     function claim(
+>     ^^^^^^^^^^^^^^^
+>         address owner,
+
+[0m
+[0;31mSeverity:    MEDIUM
+Pattern:     Missing Input Validation
+Description: Method arguments must be sanitized before they are used
+             in computations.
+Type:        Violation
+Contract:    Market
+Line:        27
+Source: 
+> 
+>     function newContract(bytes20 lock, uint256 expire ) public payable {
+>     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>         require(msg.value > 0);
+
+[0m
+[0;31mSeverity:    INFO
+Pattern:     Solidity Naming Convention
+Description: Reports declarations that do not adhere to Solidity's
+             naming convention.
+Type:        Violation
+Contract:    Market
+Line:        55
+Source: 
+> 
+>     function _F(
+>     ^^^^^^^^^^^^
+>         uint256 j,
+
+[0m
+[0;31mSeverity:    INFO
+Pattern:     Solidity Naming Convention
+Description: Reports declarations that do not adhere to Solidity's
+             naming convention.
+Type:        Violation
+Contract:    Market
+Line:        86
+Source: 
+> 
+>     function _k(bytes32 l) internal pure returns (bytes12) {
+>                 ^^^^^^^^^
+>         return bytes12(uint96(uint48(bytes6(l))) << 48);
+
+[0m
+[0;31mSeverity:    INFO
+Pattern:     Solidity Naming Convention
+Description: Reports declarations that do not adhere to Solidity's
+             naming convention.
+Type:        Violation
+Contract:    Market
+Line:        90
+Source: 
+> 
+>     function _x(bytes32 l) internal pure returns (bytes20) {
+>                 ^^^^^^^^^
+>         return bytes20(uint160(uint256(l)));
+
+[0m
+[0;31mSeverity:    INFO
+Pattern:     Solidity Naming Convention
+Description: Reports declarations that do not adhere to Solidity's
+             naming convention.
+Type:        Violation
+Contract:    Market
+Line:        104
+Source: 
+>     
+>      function is_valid_signature(
+>      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>         address signer,
+
+[0m
+[0;31mSeverity:    INFO
+Pattern:     Solidity Naming Convention
+Description: Reports declarations that do not adhere to Solidity's
+             naming convention.
+Type:        Violation
+Contract:    Market
+Line:        153
+Source: 
+> 
+>         bytes32 l;
+>         ^^^^^^^^^
+>         {
+
+[0m
+[0;31mSeverity:    LOW
+Pattern:     Solidity pragma directives
+Description: Avoid complex solidity version pragma statements.
+Type:        Violation
+Contract:    None
+Line:        1
+Source: 
+> pragma solidity >=0.5.2 <0.8.4;
+> ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> pragma experimental ABIEncoderV2;
+> 
+
+[0m
+[0;31mSeverity:    INFO
+Pattern:     State variables default visibility
+Description: Visibility of state variables should be stated explicitly
+Type:        Violation
+Contract:    Market
+Line:        19
+Source: 
+> 
+>     mapping(address => Contract) contracts;
+>     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>     mapping (address => mapping (uint48 => mapping(uint48=>bool))) private claims;
+
+[0m
+[0;31mSeverity:    CRITICAL
+Pattern:     Transaction Order Affects Ether Amount
+Description: The amount of ether transferred must not be influenced by
+             other transactions.
+Type:        Violation
+Contract:    Market
+Line:        100
+Source: 
+>             address payable owner = msg.sender; 
+>             owner.transfer(c.amount - c.claimed_value);  
+>             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>         }
+
+[0m
+[0;31mSeverity:    CRITICAL
+Pattern:     Transaction Order Affects Execution of Ether Transfer
+Description: Ether transfers whose execution can be manipulated by
+             other transactions must be inspected for unintended
+             behavior.
+Type:        Violation
+Contract:    Market
+Line:        100
+Source: 
+>             address payable owner = msg.sender; 
+>             owner.transfer(c.amount - c.claimed_value);  
+>             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>         }
+
+[0m
+[0;31mSeverity:    CRITICAL
+Pattern:     Transaction Order Affects Execution of Ether Transfer
+Description: Ether transfers whose execution can be manipulated by
+             other transactions must be inspected for unintended
+             behavior.
+Type:        Violation
+Contract:    Market
+Line:        186
+Source: 
+>             address payable sender = msg.sender; 
+>             sender.transfer(uint48(v1)); // transfer money
+>             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>         }
+
+[0m
+[0;33mSeverity:    CRITICAL
+Pattern:     Unrestricted Ether Flow
+Description: The execution of ether flows should be restricted to an
+             authorized set of users.
+Type:        Warning
+Contract:    Market
+Line:        186
+Source: 
+>             address payable sender = msg.sender; 
+>             sender.transfer(uint48(v1)); // transfer money
+>             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>         }
+
+[0m
+[0;33mSeverity:    CRITICAL
+Pattern:     Unrestricted write to storage
+Description: Contract fields that can be modified by any user must be
+             inspected.
+Type:        Warning
+Contract:    Market
+Line:        183
+Source: 
+>         if(c.lock == _x(l)){
+>             claims[owner][i1][i2] = true; // add to claimed list
+>             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>             c.claimed_value = c.claimed_value + uint48(v1); 
+
+[0m

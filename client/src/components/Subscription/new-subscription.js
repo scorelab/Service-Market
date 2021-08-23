@@ -1,42 +1,18 @@
-import React, { Component, useState } from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import { withFirebase } from '../Firebase';
-import * as ROUTES from '../../constants/routes';
-import * as ROLES from '../../constants/roles';
-import * as ERRORS from '../../constants/errors';
-import MainBlock from '../Common/main-block';
-import 'firebase/firestore';
-import ThumbUpIcon from '@material-ui/icons/ThumbUp';
-import ThumbDownIcon from '@material-ui/icons/ThumbDown';
-import AccessTimeIcon from '@material-ui/icons/AccessTime';
-import DeleteIcon from '@material-ui/icons/Delete';
-import SendIcon from '@material-ui/icons/Send';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import {
-  Typography,
-  Grid,
-  Button,
-  ButtonGroup,
-  Select,
-  FormLabel,
-  FormControlLabel,
-  OutlinedInput,
-  FormControl,
-  InputLabel,
-  InputAdornment,
-  Box,
-  Input,
-  Chip,
-  MenuItem,
-  IconButton,
+  Box, Button, FormControl, FormControlLabel, Grid, InputLabel, Select
 } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import 'firebase/firestore';
+import moment from 'moment';
+import React, { Component } from 'react';
+import { DateRangePicker } from "react-dates";
 import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
-import { DateRangePicker } from "react-dates";
-import moment from 'moment';
-import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import { compose } from 'redux';
+import MainBlock from '../Common/main-block';
+import { withFirebase } from '../Firebase';
 import SubscriptionList from './sub-list';
 
 function NewSubscriptionPage(props) {
@@ -212,13 +188,17 @@ class NewSubscriptionFormBase extends Component {
       }),
       createdAt: this.props.firebase.serverValue.TIMESTAMP,
     }).then((res) => {
-      subList.forEach((e) => {
+      subList.forEach( async (e) => {
+        const service = await this.props.firebase.service(e.serviceId).get();
+        const serviceData = service.val();
+        const intermediary = await this.props.firebase.intermediary(serviceData.intermediary).get();
+        const intermediaryData = intermediary.val();
         this.props.firebase.messages().push({
           from: authUser.username,
-          to: e.intermediary,
+          to: intermediaryData.mediator,
           type: "Subscription Request",
-          subject: e.serviceName,
-          subjectId: [res.key,e.serviceId],
+          subject: serviceData.serviceName,
+          subjectId: [res.key, e.serviceId],
 
         });
       });
@@ -242,7 +222,7 @@ class NewSubscriptionFormBase extends Component {
     } = this.state;
 
     const isInvalid =
-      subList.length == 0;
+      subList.length === 0;
 
     const { classes } = this.props;
     return (
@@ -251,7 +231,7 @@ class NewSubscriptionFormBase extends Component {
           <SubscriptionItem updateItem={this.updateItem} services={services} />
           <Grid container spacing={4} justify="flex-end">
             <Grid item xs>
-              <SubscriptionList subList={subList} />
+              <SubscriptionList isLockCreated={false} subList={subList} />
             </Grid>
           </Grid>
           <Grid container spacing={4} justify="flex-end">
@@ -260,7 +240,9 @@ class NewSubscriptionFormBase extends Component {
             </Grid>
           </Grid>
           <Grid container spacing={4}>
-            {error && <p>{error.message}</p>}
+            <Grid item xs={12}>
+              {error && error.message}
+            </Grid>
           </Grid>
         </form >
       </div>

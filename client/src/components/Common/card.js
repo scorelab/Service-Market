@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-export default function Item(props) {
+export function ServiceItem(props) {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
 
@@ -117,6 +117,74 @@ export default function Item(props) {
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
             {serviceDetails}
+          </Typography>
+        </CardContent>
+      </Collapse>
+    </Card>
+  );
+}
+
+
+export function IntItem(props) {
+  const classes = useStyles();
+  const [expanded, setExpanded] = React.useState(false);
+
+  const {
+    intermediaryName,
+    intermediaryDetails,
+    intermediaryType,
+    brokerFee,
+  } = props.data;
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
+
+  return (
+    <Card className={classes.root}>
+      <CardHeader
+        avatar={
+          <Avatar aria-label="recipe" className={classes.avatar}>
+            {intermediaryName.charAt(0).toUpperCase()}
+          </Avatar>
+        }
+        action={
+          <IconButton aria-label="settings">
+            <MoreVertIcon />
+          </IconButton>
+        }
+        title={intermediaryName}
+        subheader={intermediaryType}
+      />
+            <Divider variant="middle" />
+
+      <CardContent  className={classes.content}>
+          <Typography variant="body2" color="textSecondary" component="p">
+            Fee: {brokerFee}
+          </Typography>
+      </CardContent>
+      <CardActions disableSpacing>
+        <IconButton aria-label="add to favorites">
+          <FavoriteIcon />
+        </IconButton>
+        <IconButton aria-label="share">
+          <ShareIcon />
+        </IconButton>
+        <IconButton
+          className={clsx(classes.expand, {
+            [classes.expandOpen]: expanded,
+          })}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
+        >
+          <ExpandMoreIcon />
+        </IconButton>
+      </CardActions>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent>
+          <Typography variant="body2" color="textSecondary" component="p">
+            {intermediaryDetails}
           </Typography>
         </CardContent>
       </Collapse>

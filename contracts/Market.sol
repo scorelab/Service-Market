@@ -1,39 +1,41 @@
 pragma solidity >=0.5.2 <0.8.4;
+pragma experimental ABIEncoderV2;
 
 contract Market {
+
     struct Contract {
         uint256 amount;
         bytes32 lock;
         uint256 expire;
+        uint48 claimed_value;
+    }
+    
+    struct Witness {
+        bytes32[] W1;
+        bytes32[] W2;
+        bytes32[] W3;
     }
 
-    mapping(address => Contract[]) contracts;
-
+    mapping(address => Contract) contracts;
+    mapping (address => mapping (uint48 => mapping(uint48=>bool))) private claims;
+    
     event NewContract(uint256 index);
     event Root(bytes32 proofElement);
+    event Root20(bytes20 proofElement);
+    event Test(uint48 test);
 
     function newContract(bytes20 lock, uint256 expire ) public payable {
         require(msg.value > 0);
-        contracts[msg.sender].push(Contract(msg.value, lock, expire));
-        uint256 id = contracts[msg.sender].length - 1;
-        emit NewContract(id);
-    }
+        require(contracts[msg.sender].amount == 0); //check already exsist
 
-    function getContract(address addr, uint256 index)
-        public
-        view
-        returns (
-            uint256,
-            bytes32,
-            uint256
-        )
-    {
-        Contract memory c = contracts[addr][index];
-        return (c.amount, c.lock, c.expire);
-    }
-
-    function getCount(address a) public view returns (uint256) {
-        return contracts[a].length;
+        contracts[msg.sender] = Contract(
+            {
+                amount: msg.value,
+                lock:lock,
+                expire:expire,
+                claimed_value:0
+            }
+        );
     }
 
     function _concat2(bytes12 a, bytes20 b) internal pure returns (bytes32) {
@@ -89,12 +91,34 @@ contract Market {
         return bytes20(uint160(uint256(l)));
     }
 
+    function refund() public payable {
+        Contract memory c = contracts[msg.sender];
+        if(c.expire < block.timestamp){
+            delete contracts[msg.sender];
+            // delete claims[owner];
+            address payable owner = msg.sender; 
+            owner.transfer(c.amount - c.claimed_value);  
+        }
+    }
+    
+     function is_valid_signature(
+        address signer,
+        address sender,
+        bytes20 value,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal pure returns(bool) {
+        return ecrecover( ripemd160(abi.encodePacked(value, sender)), v, r, s) == signer;
+    }
+    
+    
     function verify(
         bytes32[] memory W,
         bytes32 h,
         uint256 j,
         uint8 layer
-    ) public returns (bytes32) {
+    ) internal  pure returns (bytes32) {
         bytes32 ln = h;
 
         for (uint48 i = 0; i < W.length; i++) {
@@ -105,45 +129,61 @@ contract Market {
 
             j = j / 2;
         }
-        emit Root(ln);
         return ln;
     }
 
     function claim(
-        address owner, 
-        uint48 index,
-        bytes32[] memory W1,
-        bytes32[] memory W2,
-        bytes32[] memory W3,
+        address owner,
+        Witness memory witness,
         bytes memory x1,
         bytes6 v1,
         bytes6 e1,
         uint48 i1,
         uint48 i2,
-        uint48 i3 // bytes32 sig
-    ) public {
-        bytes32 l = verify(
-            W1,
+        uint48 i3, // bytes32 sig
+        uint8 v, bytes32 r, bytes32 s
+    ) public payable {
+
+        //already claimed check
+        require(!claims[owner][i1][i2]);
+
+        //signature verification
+        require(is_valid_signature(owner, msg.sender, v1, v, r, s));
+
+        bytes32 l;
+        {
+        //level alpha check
+        l = verify(
+            witness.W1,
             _concat3(v1, e1, ripemd160(abi.encodePacked(x1))),
             i1,
             1
         );
+
+        //level beta check
         l = verify(
-            W2,
-            _concat2(_k(l), ripemd160(abi.encodePacked(_x(l)))),
+            witness.W2,
+            _concat2(_k(l), _x(l)),
             i2,
             2
         );
+
+        //level theta check
         l = verify(
-            W3,
+            witness.W3,
             _concat2(_k(l), ripemd160(abi.encodePacked(msg.sender, _x(l)))),
             i3,
             3
         );
-        Contract memory c = contracts[owner][index];
-        if(c.lock == l){
-            msg.sender.transfer(uint48(v1));
         }
-
+        
+        Contract memory c = contracts[owner];
+        //root lock verification
+        if(c.lock == _x(l)){
+            claims[owner][i1][i2] = true; // add to claimed list
+            c.claimed_value = c.claimed_value + uint48(v1); 
+            address payable sender = msg.sender; 
+            sender.transfer(uint48(v1)); // transfer money
+        }
     }
 }

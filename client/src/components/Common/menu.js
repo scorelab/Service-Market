@@ -1,24 +1,24 @@
-import React from 'react';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { Button, Card, CardActions, CardContent, Divider } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Store';
-import Person from '@material-ui/icons/Person';
 import InputBase from '@material-ui/core/InputBase';
+import Popover from '@material-ui/core/Popover';
+import { fade, makeStyles } from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import Person from '@material-ui/icons/Person';
+import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import SearchIcon from '@material-ui/icons/Search';
 import SettingIcon from '@material-ui/icons/Settings';
-import * as ROUTES from '../../constants/routes';
-import { Link } from 'react-router-dom';
-import { Button, ButtonGroup, Card, CardActions, CardContent, Divider } from '@material-ui/core';
-import Popover from '@material-ui/core/Popover';
-import Typography from '@material-ui/core/Typography';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import Messages from '../Messages/Messages';
+import MenuIcon from '@material-ui/icons/Store';
+import React from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import * as ROUTES from '../../constants/routes';
 import { withFirebase } from '../Firebase';
-import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import Messages from '../Messages/Messages';
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
@@ -116,7 +116,7 @@ function TopMenu({ firebase }) {
                 >
                     <MenuIcon />
                 </IconButton>
-                <Button className={classes.menuButton} >How It Works</Button>
+                <Button className={classes.menuButton} component={Link} to={ROUTES.HOW_IT_WORKS} >How It Works</Button>
                 <Button className={classes.menuButton} >About</Button>
                 <Button className={classes.menuButton} >Contact</Button>
 

@@ -41,12 +41,12 @@ class MerkleTree {
 
     L(X, K, layer) {
         const l = X.length
-        if (l == 1) {
+        if (l === 1) {
             return this.concat(K[0], X[0]);
         }
 
         let j = Math.pow(2, Math.trunc(Math.log2(l)));
-        if (j == l) {
+        if (j === l) {
             j = Math.pow(2, Math.trunc(Math.log2(l - 1)));
         }
         return this.concat(
@@ -63,11 +63,11 @@ class MerkleTree {
 
     W(i, X, K, layer) {
         const l = X.length
-        if (l == 1) {
+        if (l === 1) {
             return [];
         }
         let j = Math.pow(2, Math.trunc(Math.log2(l)));
-        if (j == l) {
+        if (j === l) {
             j = Math.pow(2, Math.trunc(Math.log2(l - 1)));
         }
         if (i < j) {
@@ -105,7 +105,7 @@ class MerkleTree {
             var ks2 = []
             var xs2 = []
             services.forEach(servData => {
-                const x1 = servData["data"][0].map(el => Buffer.from(el))
+                const x1 = servData["data"][0].map(el => toBuffer(el))
                 const k1 = servData["data"][1].map(el => {
                     let buff = Buffer.alloc(12);
                     buff.writeIntBE(el[0], 0, 6);
@@ -120,7 +120,7 @@ class MerkleTree {
 
             const k3 = this.L(xs2, ks2, 2);
             const h3 = k3.slice(12, 32);
-            xs3.push(Buffer.concat([address, h3]));
+            xs3.push(this.H(Buffer.concat([address, h3])));
             ks3.push(k3.slice(0, 12).fill(0, 6, 12));
         });
         return this.L(xs3, ks3, 3);
@@ -136,7 +136,7 @@ class MerkleTree {
             var ks2 = []
             var xs2 = []
             services.forEach((servData, index1) => {
-                const x1 = servData["data"][0].map(el => Buffer.from(el))
+                const x1 = servData["data"][0].map(el => toBuffer(el))
                 const k1 = servData["data"][1].map(el => {
                     let buff = Buffer.alloc(12);
                     buff.writeIntBE(el[0], 0, 6);
@@ -144,18 +144,18 @@ class MerkleTree {
                     return buff;                        
                 });
                 const k2 = this.L(x1, k1, 1);
-                if (index1 == i2 & index2 == i3) {
+                if (index1 === i2 & index2 === i3) {
                     proofs[1] = this.W(i1, x1, k1, 1);
                 }
                 xs2.push(k2.slice(12, 32));
                 ks2.push(k2.slice(0, 12).fill(0, 6, 12));
             });
             const k3 = this.L(xs2, ks2, 2);
-            if (index2 == i3) {
+            if (index2 === i3) {
                 proofs[2] = this.W(i2, xs2, ks2, 2);
             }
             const h = k3.slice(12, 32);
-            xs3.push(Buffer.concat([address, h]));
+            xs3.push(this.H(Buffer.concat([address, h])));
             ks3.push(k3.slice(0, 12).fill(0, 6, 12));
 
         });

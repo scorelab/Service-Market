@@ -1,11 +1,10 @@
-import { Box, Button, Typography } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import MainBlock from '../Common/main-block';
-
 import { withFirebase } from '../Firebase';
 import MessageList from './MessageList';
+
 
 class Messages extends Component {
   constructor(props) {
@@ -32,7 +31,8 @@ class Messages extends Component {
   onListenForMessages = () => {
     this.props.firebase
       .messages()
-      .orderByChild('createdAt')
+      .orderByChild('to')
+      .equalTo(this.props.authUser.uid)
       .limitToLast(this.props.limit)
       .on('value', snapshot => {
         this.props.onSetMessages(snapshot.val());
@@ -45,7 +45,7 @@ class Messages extends Component {
   }
 
   onActionTaken = (msg, isAccepted) => {
-    const { subjectId, ...subSnapshot } = msg;
+    const { subjectId } = msg;
     var that = this
     var status = isAccepted ? "Approved" : "Rejected";
     this.props.firebase.subscriptions().orderByKey()
